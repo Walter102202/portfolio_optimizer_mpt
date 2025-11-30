@@ -1,0 +1,197 @@
+:root {
+    --bg-deep: #0b1525;
+    --bg-panel: #0f2236;
+    --bg-contrast: #122a46;
+    --primary: #2e9bff;
+    --primary-strong: #1f6fd1;
+    --text-muted: #a9b8cc;
+}
+
+* {
+    font-family: 'Manrope', system-ui, -apple-system, sans-serif;
+}
+
+body.bg-deep {
+    background: radial-gradient(140% 140% at 20% 20%, #15325a 0%, rgba(21, 50, 90, 0) 40%), var(--bg-deep);
+    color: #e7efff;
+    min-height: 100vh;
+}
+
+.navbar {
+    background: linear-gradient(90deg, #0c1f38, #0b1729);
+}
+
+.navbar .nav-link {
+    color: #dce7f7;
+    opacity: 0.9;
+}
+
+.navbar .nav-link:hover {
+    color: #fff;
+    opacity: 1;
+}
+
+.brand-mark {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #5cd3ff, #1a7be0);
+    display: inline-block;
+}
+
+.btn-pill {
+    border-radius: 999px;
+    padding: 0.55rem 1.1rem;
+}
+
+.btn-primary {
+    background: linear-gradient(120deg, #2e9bff, #1f6fd1);
+    border: none;
+    box-shadow: 0 10px 35px rgba(46, 155, 255, 0.25);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(120deg, #48acff, #2c7ff0);
+}
+
+.hero-section {
+    padding: 3.5rem 0 2.5rem;
+    background: radial-gradient(120% 120% at 80% 20%, rgba(46, 155, 255, 0.3) 0%, rgba(10, 33, 61, 0) 45%), linear-gradient(180deg, #0f1e33 0%, #0b1525 70%);
+}
+
+.hero-section.slim {
+    padding: 2.4rem 0 1.4rem;
+}
+
+.bg-glow {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(60% 60% at 75% 30%, rgba(64, 150, 255, 0.2), transparent 60%);
+    filter: blur(60px);
+    z-index: 0;
+}
+
+.hero-section .container {
+    position: relative;
+    z-index: 1;
+}
+
+.eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 0.8rem;
+    color: #7fb6ff;
+}
+
+.text-gradient {
+    background: linear-gradient(120deg, #e7f1ff, #a9d3ff);
+    -webkit-background-clip: text;
+    color: transparent;
+}
+
+.pill {
+    padding: 0.45rem 0.85rem;
+    background: rgba(46, 155, 255, 0.12);
+    border: 1px solid rgba(46, 155, 255, 0.3);
+    color: #dbe9ff;
+    border-radius: 999px;
+    font-size: 0.9rem;
+}
+
+.form-card {
+    background: linear-gradient(160deg, #0f1f35, #101c2e 55%, #0c1523);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 1rem;
+    padding: 1.5rem;
+}
+
+.form-control, .form-select {
+    background-color: #0c1a2c;
+    border: 1px solid #214064;
+    color: #e7efff;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #2e9bff;
+    box-shadow: 0 0 0 0.2rem rgba(46, 155, 255, 0.15);
+}
+
+.form-text {
+    color: var(--text-muted);
+}
+
+.info-card, .metric-card, .kpi-card, .table-card {
+    background: var(--bg-panel);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 1rem;
+    padding: 1.25rem;
+}
+
+.metric-card, .kpi-card.gradient {
+    background: linear-gradient(135deg, rgba(46, 155, 255, 0.16), rgba(12, 27, 50, 0.9));
+    border: 1px solid rgba(46, 155, 255, 0.3);
+}
+
+.table-card .card-body {
+    padding: 1.5rem;
+}
+
+.icon-circle {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(46, 155, 255, 0.15);
+    border: 1px solid rgba(46, 155, 255, 0.35);
+    color: #c8e6ff;
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+}
+
+.badge-soft {
+    border-radius: 999px;
+    padding: 0.35rem 0.75rem;
+    border: 1px solid rgba(46, 155, 255, 0.35);
+}
+
+.bg-primary-subtle {
+    background: rgba(46, 155, 255, 0.08) !important;
+}
+
+.bg-primary-soft {
+    background: rgba(46, 155, 255, 0.18);
+    color: #dff1ff;
+}
+
+.table-dark {
+    --bs-table-bg: #0f2236;
+    --bs-table-striped-bg: #132c45;
+    --bs-table-hover-bg: #153351;
+    --bs-table-border-color: rgba(255, 255, 255, 0.05);
+    color: #dfeafc;
+}
+
+.table thead th {
+    color: #9fb5d3;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.text-muted {
+    color: var(--text-muted) !important;
+}
+
+textarea#tickers {
+    min-height: 140px;
+}
+
+#page-content {
+    margin-top: -1rem;
+    padding-bottom: 3rem;
+}
+
+@media (max-width: 991px) {
+    #page-content {
+        margin-top: 0;
+    }
+}

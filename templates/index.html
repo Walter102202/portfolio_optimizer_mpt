@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block hero %}
+<section class="hero-section position-relative overflow-hidden">
+    <div class="bg-glow"></div>
+    <div class="container">
+        <div class="row align-items-center gy-4">
+            <div class="col-lg-6">
+                <div class="eyebrow mb-3">Inversión cuantitativa</div>
+                <h1 class="display-6 fw-bold text-gradient mb-3">Optimiza tu portafolio con el enfoque de Markowitz</h1>
+                <p class="lead text-light opacity-85 mb-4">Analiza hasta 20 acciones, descarga datos históricos y obtén la asignación con mejor ratio de Sharpe en minutos.</p>
+                <div class="d-flex flex-wrap gap-3">
+                    <div class="pill">Datos Yahoo Finance</div>
+                    <div class="pill">Restricción sin cortos</div>
+                    <div class="pill">Sharpe Máximo</div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="form-card shadow-lg" id="formulario">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="badge-soft text-primary bg-primary-subtle me-2">Simulación</div>
+                        <span class="text-muted small">3 pasos para tu cartera óptima</span>
+                    </div>
+                    <form id="portfolio-form" method="POST" novalidate>
+                        <div class="mb-3">
+                            <label for="tickers" class="form-label text-light">Tickers</label>
+                            <textarea class="form-control form-control-lg" id="tickers" name="tickers" rows="3" placeholder="AAPL, MSFT, AMZN, GOOG, META, ..." required>{{ tickers_text }}</textarea>
+                            <div class="form-text text-muted">Ingresa entre 5 y 20 tickers, separados por coma o espacio.</div>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="period" class="form-label text-light">Periodo histórico</label>
+                                <select class="form-select form-select-lg" id="period" name="period">
+                                    {% set periods = ["1y", "3y", "5y", "10y", "max"] %}
+                                    {% for p in periods %}
+                                        <option value="{{ p }}" {% if p == period %}selected{% endif %}>{{ p }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="interval" class="form-label text-light">Intervalo</label>
+                                <select class="form-select form-select-lg" id="interval" name="interval">
+                                    {% set intervals = ["1d", "1wk", "1mo"] %}
+                                    {% for iv in intervals %}
+                                        <option value="{{ iv }}" {% if iv == interval %}selected{% endif %}>{{ iv }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center mt-4">
+                            <button class="btn btn-primary btn-lg me-3" type="submit">Calcular cartera óptima</button>
+                            <div id="spinner" class="spinner-border text-primary d-none" role="status">
+                                <span class="visually-hidden">Calculando...</span>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<section class="py-5" id="como-funciona">
+    <div class="row g-4">
+        <div class="col-lg-4">
+            <div class="info-card h-100">
+                <div class="icon-circle mb-3">1</div>
+                <h3 class="h5 text-light">Define el universo</h3>
+                <p class="text-muted mb-0">Ingresa entre 5 y 20 acciones que quieras evaluar. Podemos mezclar distintos sectores y mercados.</p>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="info-card h-100">
+                <div class="icon-circle mb-3">2</div>
+                <h3 class="h5 text-light">Procesamos los datos</h3>
+                <p class="text-muted mb-0">Descargamos precios ajustados, calculamos retornos, medias y covarianzas diarias en segundos.</p>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="info-card h-100">
+                <div class="icon-circle mb-3">3</div>
+                <h3 class="h5 text-light">Entregamos el óptimo</h3>
+                <p class="text-muted mb-0">Resolvemos el problema de Markowitz maximizando Sharpe sin ventas cortas y te mostramos los pesos finales.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5" id="metricas">
+    <div class="row g-4">
+        <div class="col-lg-4">
+            <div class="metric-card">
+                <p class="text-muted small mb-1">Riesgo controlado</p>
+                <h3 class="text-light mb-1">Matriz de covarianzas</h3>
+                <p class="text-muted mb-0">Usamos varianzas y covarianzas recientes para equilibrar la volatilidad de la cartera.</p>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="metric-card">
+                <p class="text-muted small mb-1">Rentabilidad esperada</p>
+                <h3 class="text-light mb-1">Media de retornos</h3>
+                <p class="text-muted mb-0">Estimamos los retornos promedio del periodo seleccionado para guiar la asignación.</p>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="metric-card">
+                <p class="text-muted small mb-1">Maximizando eficiencia</p>
+                <h3 class="text-light mb-1">Sharpe objetivo</h3>
+                <p class="text-muted mb-0">Optimización con SLSQP, pesos en [0,1] y suma 1 para evitar ventas cortas.</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
