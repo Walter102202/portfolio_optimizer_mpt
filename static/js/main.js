@@ -18,6 +18,144 @@ const POPULAR_TICKERS = {
     Consumer: ["KO", "PEP", "PG", "WMT", "HD", "NKE"]
 };
 
+// Base de datos S&P 500 - ticker y nombre de empresa para búsqueda
+const SP500_STOCKS = [
+    {t:"AAPL",n:"Apple"},{t:"MSFT",n:"Microsoft"},{t:"GOOGL",n:"Alphabet Google"},{t:"AMZN",n:"Amazon"},{t:"NVDA",n:"NVIDIA"},
+    {t:"META",n:"Meta Facebook"},{t:"TSLA",n:"Tesla"},{t:"BRK.B",n:"Berkshire Hathaway"},{t:"LLY",n:"Eli Lilly"},{t:"V",n:"Visa"},
+    {t:"UNH",n:"UnitedHealth"},{t:"XOM",n:"Exxon Mobil"},{t:"JPM",n:"JPMorgan Chase"},{t:"JNJ",n:"Johnson Johnson"},
+    {t:"WMT",n:"Walmart"},{t:"MA",n:"Mastercard"},{t:"PG",n:"Procter Gamble"},{t:"AVGO",n:"Broadcom"},{t:"HD",n:"Home Depot"},
+    {t:"CVX",n:"Chevron"},{t:"MRK",n:"Merck"},{t:"ABBV",n:"AbbVie"},{t:"COST",n:"Costco"},{t:"KO",n:"Coca Cola"},
+    {t:"ORCL",n:"Oracle"},{t:"PEP",n:"PepsiCo Pepsi"},{t:"ADBE",n:"Adobe"},{t:"MCD",n:"McDonald McDonalds"},
+    {t:"CSCO",n:"Cisco"},{t:"CRM",n:"Salesforce"},{t:"ACN",n:"Accenture"},{t:"NFLX",n:"Netflix"},{t:"TMO",n:"Thermo Fisher"},
+    {t:"ABT",n:"Abbott"},{t:"INTC",n:"Intel"},{t:"AMD",n:"Advanced Micro Devices"},{t:"DHR",n:"Danaher"},
+    {t:"DIS",n:"Disney Walt"},{t:"TXN",n:"Texas Instruments"},{t:"CMCSA",n:"Comcast"},{t:"PFE",n:"Pfizer"},
+    {t:"VZ",n:"Verizon"},{t:"NKE",n:"Nike"},{t:"WFC",n:"Wells Fargo"},{t:"COP",n:"ConocoPhillips"},{t:"BMY",n:"Bristol Myers Squibb"},
+    {t:"LIN",n:"Linde"},{t:"PM",n:"Philip Morris"},{t:"UPS",n:"United Parcel Service"},{t:"HON",n:"Honeywell"},
+    {t:"RTX",n:"RTX Raytheon"},{t:"QCOM",n:"Qualcomm"},{t:"T",n:"ATT AT&T"},{t:"INTU",n:"Intuit"},{t:"UNP",n:"Union Pacific"},
+    {t:"LOW",n:"Lowes Lowe"},{t:"SPGI",n:"SP Global"},{t:"BA",n:"Boeing"},{t:"AMAT",n:"Applied Materials"},{t:"CAT",n:"Caterpillar"},
+    {t:"GS",n:"Goldman Sachs"},{t:"ELV",n:"Elevance Health"},{t:"DE",n:"Deere John"},{t:"BLK",n:"BlackRock"},
+    {t:"BKNG",n:"Booking Holdings"},{t:"AXP",n:"American Express"},{t:"MS",n:"Morgan Stanley"},{t:"GILD",n:"Gilead"},
+    {t:"ADI",n:"Analog Devices"},{t:"MDLZ",n:"Mondelez"},{t:"MMC",n:"Marsh McLennan"},{t:"TJX",n:"TJX Companies"},
+    {t:"GE",n:"General Electric"},{t:"VRTX",n:"Vertex Pharmaceuticals"},{t:"ADP",n:"Automatic Data Processing"},
+    {t:"SLB",n:"Schlumberger"},{t:"AMT",n:"American Tower"},{t:"CI",n:"Cigna"},{t:"TMUS",n:"T-Mobile TMobile"},
+    {t:"C",n:"Citigroup Citi"},{t:"REGN",n:"Regeneron"},{t:"MO",n:"Altria"},{t:"CB",n:"Chubb"},{t:"NOW",n:"ServiceNow"},
+    {t:"ISRG",n:"Intuitive Surgical"},{t:"SBUX",n:"Starbucks"},{t:"SCHW",n:"Charles Schwab"},{t:"ZTS",n:"Zoetis"},
+    {t:"PLD",n:"Prologis"},{t:"SO",n:"Southern Company"},{t:"DUK",n:"Duke Energy"},{t:"PGR",n:"Progressive"},
+    {t:"BSX",n:"Boston Scientific"},{t:"ETN",n:"Eaton"},{t:"BDX",n:"Becton Dickinson"},{t:"APD",n:"Air Products"},
+    {t:"PANW",n:"Palo Alto Networks"},{t:"CME",n:"CME Group"},{t:"EOG",n:"EOG Resources"},{t:"ITW",n:"Illinois Tool Works"},
+    {t:"AON",n:"Aon"},{t:"CL",n:"Colgate Palmolive"},{t:"MCK",n:"McKesson"},{t:"CSX",n:"CSX Corporation"},
+    {t:"WM",n:"Waste Management"},{t:"HCA",n:"HCA Healthcare"},{t:"USB",n:"US Bancorp"},{t:"MU",n:"Micron Technology"},
+    {t:"PYPL",n:"PayPal"},{t:"GM",n:"General Motors"},{t:"PNC",n:"PNC Financial"},{t:"APH",n:"Amphenol"},
+    {t:"SHW",n:"Sherwin Williams"},{t:"ECL",n:"Ecolab"},{t:"MSI",n:"Motorola Solutions"},{t:"MAR",n:"Marriott"},
+    {t:"NSC",n:"Norfolk Southern"},{t:"KLAC",n:"KLA Corporation"},{t:"LRCX",n:"Lam Research"},{t:"FDX",n:"FedEx"},
+    {t:"SNPS",n:"Synopsys"},{t:"CDNS",n:"Cadence Design"},{t:"AJG",n:"Arthur J Gallagher"},{t:"ICE",n:"Intercontinental Exchange"},
+    {t:"AFL",n:"Aflac"},{t:"TGT",n:"Target"},{t:"EMR",n:"Emerson Electric"},{t:"AIG",n:"American International"},
+    {t:"FCX",n:"Freeport McMoRan"},{t:"ORLY",n:"OReilly Automotive"},{t:"TFC",n:"Truist Financial"},{t:"PSA",n:"Public Storage"},
+    {t:"CEG",n:"Constellation Energy"},{t:"MCO",n:"Moodys Moody"},{t:"PCAR",n:"PACCAR"},{t:"ROP",n:"Roper Technologies"},
+    {t:"AZO",n:"AutoZone"},{t:"NXPI",n:"NXP Semiconductors"},{t:"SRE",n:"Sempra Energy"},{t:"GD",n:"General Dynamics"},
+    {t:"COIN",n:"Coinbase"},{t:"TRV",n:"Travelers Companies"},{t:"CARR",n:"Carrier Global"},{t:"ROST",n:"Ross Stores"},
+    {t:"JCI",n:"Johnson Controls"},{t:"ABNB",n:"Airbnb"},{t:"MCHP",n:"Microchip Technology"},{t:"HUM",n:"Humana"},
+    {t:"CCI",n:"Crown Castle"},{t:"ALL",n:"Allstate"},{t:"O",n:"Realty Income"},{t:"AEP",n:"American Electric Power"},
+    {t:"CMG",n:"Chipotle Mexican Grill"},{t:"KMB",n:"Kimberly Clark"},{t:"CMI",n:"Cummins"},{t:"PAYX",n:"Paychex"},
+    {t:"WELL",n:"Welltower"},{t:"URI",n:"United Rentals"},{t:"CPRT",n:"Copart"},{t:"FTNT",n:"Fortinet"},
+    {t:"HLT",n:"Hilton"},{t:"D",n:"Dominion Energy"},{t:"GWW",n:"Grainger"},{t:"ODFL",n:"Old Dominion Freight"},
+    {t:"F",n:"Ford Motor"},{t:"FAST",n:"Fastenal"},{t:"TEL",n:"TE Connectivity"},{t:"CTVA",n:"Corteva"},
+    {t:"SPG",n:"Simon Property"},{t:"KR",n:"Kroger"},{t:"MSCI",n:"MSCI Inc"},{t:"YUM",n:"Yum Brands"},
+    {t:"KHC",n:"Kraft Heinz"},{t:"IDXX",n:"IDEXX Laboratories"},{t:"RSG",n:"Republic Services"},{t:"BK",n:"Bank of New York Mellon"},
+    {t:"NEM",n:"Newmont"},{t:"VRSK",n:"Verisk Analytics"},{t:"EA",n:"Electronic Arts"},{t:"SYK",n:"Stryker"},
+    {t:"DHI",n:"DR Horton"},{t:"EW",n:"Edwards Lifesciences"},{t:"HPQ",n:"HP Inc"},{t:"CTSH",n:"Cognizant"},
+    {t:"STZ",n:"Constellation Brands"},{t:"GIS",n:"General Mills"},{t:"A",n:"Agilent Technologies"},{t:"EXC",n:"Exelon"},
+    {t:"IR",n:"Ingersoll Rand"},{t:"DLR",n:"Digital Realty"},{t:"IQV",n:"IQVIA Holdings"},{t:"LHX",n:"L3Harris Technologies"},
+    {t:"CTAS",n:"Cintas"},{t:"XEL",n:"Xcel Energy"},{t:"PCG",n:"PG&E Pacific Gas Electric"},{t:"HES",n:"Hess"},
+    {t:"ACGL",n:"Arch Capital"},{t:"RMD",n:"ResMed"},{t:"KVUE",n:"Kenvue"},{t:"HSY",n:"Hershey"},
+    {t:"DD",n:"DuPont"},{t:"DXCM",n:"DexCom"},{t:"IT",n:"Gartner"},{t:"VMC",n:"Vulcan Materials"},
+    {t:"CHTR",n:"Charter Communications"},{t:"ANSS",n:"ANSYS"},{t:"DAL",n:"Delta Air Lines"},{t:"ROK",n:"Rockwell Automation"},
+    {t:"MTD",n:"Mettler Toledo"},{t:"CDW",n:"CDW Corporation"},{t:"GLW",n:"Corning"},{t:"WMB",n:"Williams Companies"},
+    {t:"ED",n:"Consolidated Edison"},{t:"TTWO",n:"Take Two Interactive"},{t:"EFX",n:"Equifax"},{t:"MPWR",n:"Monolithic Power"},
+    {t:"PPG",n:"PPG Industries"},{t:"OXY",n:"Occidental Petroleum"},{t:"FICO",n:"Fair Isaac FICO"},{t:"DOW",n:"Dow Chemical"},
+    {t:"BAX",n:"Baxter International"},{t:"STT",n:"State Street"},{t:"EIX",n:"Edison International"},{t:"TSN",n:"Tyson Foods"},
+    {t:"AVB",n:"AvalonBay Communities"},{t:"GRMN",n:"Garmin"},{t:"MLM",n:"Martin Marietta"},{t:"WBD",n:"Warner Bros Discovery"},
+    {t:"VICI",n:"VICI Properties"},{t:"HAL",n:"Halliburton"},{t:"WAB",n:"Westinghouse Air Brake"},{t:"WEC",n:"WEC Energy"},
+    {t:"FANG",n:"Diamondback Energy"},{t:"BKR",n:"Baker Hughes"},{t:"MPC",n:"Marathon Petroleum"},{t:"VLO",n:"Valero Energy"},
+    {t:"PSX",n:"Phillips 66"},{t:"KMI",n:"Kinder Morgan"},{t:"HIG",n:"Hartford Financial"},{t:"KEYS",n:"Keysight Technologies"},
+    {t:"EQR",n:"Equity Residential"},{t:"AWK",n:"American Water Works"},{t:"DTE",n:"DTE Energy"},{t:"PRU",n:"Prudential Financial"},
+    {t:"LEN",n:"Lennar"},{t:"DVN",n:"Devon Energy"},{t:"TROW",n:"T Rowe Price"},{t:"GPN",n:"Global Payments"},
+    {t:"SBAC",n:"SBA Communications"},{t:"CHD",n:"Church Dwight"},{t:"EQT",n:"EQT Corporation"},{t:"COF",n:"Capital One"},
+    {t:"DFS",n:"Discover Financial"},{t:"PPL",n:"PPL Corporation"},{t:"ADM",n:"Archer Daniels Midland"},{t:"NUE",n:"Nucor"},
+    {t:"IBM",n:"International Business Machines"},{t:"ZBH",n:"Zimmer Biomet"},{t:"AEE",n:"Ameren"},{t:"LYB",n:"LyondellBasell"},
+    {t:"VTR",n:"Ventas"},{t:"FIS",n:"Fidelity National Information"},{t:"BRO",n:"Brown Brown"},{t:"PH",n:"Parker Hannifin"}
+];
+
+// Crear índice de búsqueda para acceso rápido
+const STOCK_SEARCH_INDEX = {};
+SP500_STOCKS.forEach(stock => {
+    const searchTerms = `${stock.t} ${stock.n}`.toLowerCase();
+    STOCK_SEARCH_INDEX[stock.t] = { ticker: stock.t, name: stock.n, searchTerms };
+});
+
+/**
+ * Busca acciones por ticker o nombre de empresa
+ * @param {string} query - Término de búsqueda
+ * @param {number} maxResults - Máximo número de resultados (default: 8)
+ * @returns {Array} - Array de resultados ordenados por relevancia
+ */
+function searchStocks(query, maxResults = 8) {
+    if (!query || query.trim().length === 0) {
+        return [];
+    }
+
+    const searchQuery = query.toLowerCase().trim();
+    const results = [];
+
+    // Buscar en el índice
+    for (const ticker in STOCK_SEARCH_INDEX) {
+        const stock = STOCK_SEARCH_INDEX[ticker];
+        const tickerLower = stock.ticker.toLowerCase();
+        const nameLower = stock.name.toLowerCase();
+
+        // Calcular puntuación de relevancia
+        let score = 0;
+
+        // Coincidencia exacta con ticker (máxima prioridad)
+        if (tickerLower === searchQuery) {
+            score = 1000;
+        }
+        // Ticker comienza con el query
+        else if (tickerLower.startsWith(searchQuery)) {
+            score = 900;
+        }
+        // Ticker contiene el query
+        else if (tickerLower.includes(searchQuery)) {
+            score = 700;
+        }
+        // Nombre comienza con el query
+        else if (nameLower.startsWith(searchQuery)) {
+            score = 600;
+        }
+        // Palabra del nombre comienza con el query
+        else if (nameLower.split(' ').some(word => word.startsWith(searchQuery))) {
+            score = 500;
+        }
+        // Nombre contiene el query
+        else if (nameLower.includes(searchQuery)) {
+            score = 300;
+        }
+
+        if (score > 0) {
+            results.push({
+                ticker: stock.ticker,
+                name: stock.name,
+                score: score
+            });
+        }
+    }
+
+    // Ordenar por puntuación descendente y limitar resultados
+    return results
+        .sort((a, b) => b.score - a.score)
+        .slice(0, maxResults);
+}
+
 /**
  * Crea un chip HTML para un ticker
  * @param {string} ticker - Símbolo del ticker
@@ -180,6 +318,9 @@ class TickerSelector {
         this.container = document.getElementById("selected-tickers");
         this.searchInput = document.getElementById("ticker-search");
         this.suggestionsContainer = document.getElementById("quick-suggestions");
+        this.resultsDropdown = document.getElementById("search-results");
+        this.currentResults = [];
+        this.selectedIndex = -1;
 
         this.init();
     }
@@ -203,22 +344,53 @@ class TickerSelector {
     }
 
     setupEventListeners() {
-        // Enter en el input de búsqueda
-        this.searchInput.addEventListener("keydown", (e) => {
-            if (e.key === "Enter") {
-                e.preventDefault();
-                const ticker = this.searchInput.value.trim();
-                if (ticker) {
-                    this.addTicker(ticker);
-                }
+        // Input change para búsqueda en tiempo real
+        this.searchInput.addEventListener("input", (e) => {
+            const query = e.target.value.trim();
+            if (query.length >= 1) {
+                this.showSearchResults(query);
+            } else {
+                this.hideSearchResults();
             }
         });
 
-        // Backspace para remover último ticker cuando input está vacío
+        // Navegación por teclado
         this.searchInput.addEventListener("keydown", (e) => {
-            if (e.key === "Backspace" && this.searchInput.value === "" && this.selectedTickers.length > 0) {
+            if (e.key === "ArrowDown") {
+                e.preventDefault();
+                this.navigateResults(1);
+            } else if (e.key === "ArrowUp") {
+                e.preventDefault();
+                this.navigateResults(-1);
+            } else if (e.key === "Enter") {
+                e.preventDefault();
+                if (this.selectedIndex >= 0 && this.currentResults.length > 0) {
+                    // Seleccionar resultado del dropdown
+                    const selectedResult = this.currentResults[this.selectedIndex];
+                    this.addTicker(selectedResult.ticker);
+                    this.hideSearchResults();
+                } else {
+                    // Agregar lo que está escrito
+                    const ticker = this.searchInput.value.trim();
+                    if (ticker) {
+                        this.addTicker(ticker);
+                        this.hideSearchResults();
+                    }
+                }
+            } else if (e.key === "Escape") {
+                this.hideSearchResults();
+            } else if (e.key === "Backspace" && this.searchInput.value === "" && this.selectedTickers.length > 0) {
                 const lastTicker = this.selectedTickers[this.selectedTickers.length - 1];
                 this.removeTicker(lastTicker);
+            }
+        });
+
+        // Click en resultados del dropdown
+        this.resultsDropdown.addEventListener("click", (e) => {
+            const item = e.target.closest(".search-result-item");
+            if (item && item.dataset.ticker) {
+                this.addTicker(item.dataset.ticker);
+                this.hideSearchResults();
             }
         });
 
@@ -230,7 +402,7 @@ class TickerSelector {
             }
         });
 
-        // Click en botón de remover chip (delegación de eventos)
+        // Click en botón de remover chip
         this.container.addEventListener("click", (e) => {
             if (e.target.classList.contains("ticker-chip-remove")) {
                 const chip = e.target.closest(".ticker-chip");
@@ -238,6 +410,68 @@ class TickerSelector {
                     const ticker = chip.dataset.ticker;
                     this.removeTicker(ticker);
                 }
+            }
+        });
+
+        // Cerrar dropdown al hacer click fuera
+        document.addEventListener("click", (e) => {
+            if (!this.searchInput.contains(e.target) && !this.resultsDropdown.contains(e.target)) {
+                this.hideSearchResults();
+            }
+        });
+    }
+
+    showSearchResults(query) {
+        const results = searchStocks(query);
+        this.currentResults = results;
+        this.selectedIndex = -1;
+
+        if (results.length === 0) {
+            this.resultsDropdown.innerHTML = '<div class="search-result-empty">No se encontraron resultados</div>';
+            this.resultsDropdown.style.display = "block";
+            return;
+        }
+
+        let html = "";
+        results.forEach((result, index) => {
+            const activeClass = index === this.selectedIndex ? "active" : "";
+            html += `
+                <div class="search-result-item ${activeClass}" data-ticker="${result.ticker}" data-index="${index}">
+                    <span class="search-result-ticker">${result.ticker}</span>
+                    <span class="search-result-name">${result.name}</span>
+                </div>
+            `;
+        });
+
+        this.resultsDropdown.innerHTML = html;
+        this.resultsDropdown.style.display = "block";
+    }
+
+    hideSearchResults() {
+        this.resultsDropdown.style.display = "none";
+        this.currentResults = [];
+        this.selectedIndex = -1;
+    }
+
+    navigateResults(direction) {
+        if (this.currentResults.length === 0) return;
+
+        this.selectedIndex += direction;
+
+        if (this.selectedIndex < 0) {
+            this.selectedIndex = this.currentResults.length - 1;
+        } else if (this.selectedIndex >= this.currentResults.length) {
+            this.selectedIndex = 0;
+        }
+
+        // Actualizar estilos visuales
+        const items = this.resultsDropdown.querySelectorAll(".search-result-item");
+        items.forEach((item, index) => {
+            if (index === this.selectedIndex) {
+                item.classList.add("active");
+                item.scrollIntoView({ block: "nearest", behavior: "smooth" });
+            } else {
+                item.classList.remove("active");
             }
         });
     }
@@ -269,6 +503,9 @@ class TickerSelector {
 
         // Actualizar UI
         this.updateUI();
+
+        // Ocultar resultados de búsqueda
+        this.hideSearchResults();
 
         // Limpiar input
         if (clearInput) {

@@ -28,14 +28,18 @@
                             <!-- Área de chips seleccionados -->
                             <div id="selected-tickers" class="ticker-chips-container mb-2"></div>
 
-                            <!-- Input de búsqueda -->
-                            <input
-                                type="text"
-                                id="ticker-search"
-                                class="form-control form-control-lg"
-                                placeholder="Escribe un ticker (ej: AAPL) y presiona Enter..."
-                                autocomplete="off"
-                            />
+                            <!-- Input de búsqueda con autocompletado -->
+                            <div class="ticker-search-wrapper position-relative">
+                                <input
+                                    type="text"
+                                    id="ticker-search"
+                                    class="form-control form-control-lg"
+                                    placeholder="Busca por ticker o nombre (ej: Apple, MSFT)..."
+                                    autocomplete="off"
+                                />
+                                <!-- Dropdown de resultados -->
+                                <div id="search-results" class="search-results-dropdown" style="display: none;"></div>
+                            </div>
 
                             <!-- Campo hidden para backend -->
                             <textarea id="tickers" name="tickers" style="display: none;" required>{{ tickers_text }}</textarea>

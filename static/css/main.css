@@ -380,6 +380,98 @@ textarea#tickers {
     animation: chipFadeOut 0.2s ease forwards;
 }
 
+/* Search Results Dropdown */
+.ticker-search-wrapper {
+    position: relative;
+}
+
+.search-results-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-top: 0.25rem;
+    background: linear-gradient(160deg, #0f1f35, #101c2e);
+    border: 1px solid rgba(46, 155, 255, 0.3);
+    border-radius: 0.5rem;
+    max-height: 320px;
+    overflow-y: auto;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    animation: dropdownFadeIn 0.2s ease;
+}
+
+.search-results-dropdown::-webkit-scrollbar {
+    width: 8px;
+}
+
+.search-results-dropdown::-webkit-scrollbar-track {
+    background: rgba(12, 26, 44, 0.4);
+    border-radius: 4px;
+}
+
+.search-results-dropdown::-webkit-scrollbar-thumb {
+    background: rgba(46, 155, 255, 0.3);
+    border-radius: 4px;
+}
+
+.search-results-dropdown::-webkit-scrollbar-thumb:hover {
+    background: rgba(46, 155, 255, 0.5);
+}
+
+.search-result-item {
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.15s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.search-result-item:last-child {
+    border-bottom: none;
+}
+
+.search-result-item:hover,
+.search-result-item.active {
+    background: rgba(46, 155, 255, 0.15);
+}
+
+.search-result-ticker {
+    font-weight: 700;
+    color: #dff1ff;
+    font-size: 0.95rem;
+    letter-spacing: 0.05em;
+    min-width: 70px;
+}
+
+.search-result-name {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    flex: 1;
+    margin-left: 0.75rem;
+    text-align: left;
+}
+
+.search-result-empty {
+    padding: 1rem;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+@keyframes dropdownFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 /* Responsive */
 @media (max-width: 576px) {
     .ticker-chip {
