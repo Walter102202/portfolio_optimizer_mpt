@@ -33,17 +33,25 @@ def create_app():
 
             if not (5 <= len(tickers) <= 20):
                 error = "Debes ingresar entre 5 y 20 tickers."
+                try:
+                    risk_free_rate = get_10year_treasury_rate()
+                except Exception:
+                    risk_free_rate = 0.04
                 return render_template(
                     "index.html",
                     error=error,
                     tickers_text=tickers_raw,
                     period=period,
+                    risk_free_rate=risk_free_rate,
                 )
 
+            # Obtener tasa libre de riesgo del bono del tesoro a 10 años
             try:
-                # Obtener tasa libre de riesgo del bono del tesoro a 10 años
                 risk_free_rate = get_10year_treasury_rate()
+            except Exception:
+                risk_free_rate = 0.04  # Fallback en caso de error
 
+            try:
                 prices = get_price_data(tickers, period=period)
                 opt = optimize_portfolio(prices, risk_free_rate=risk_free_rate)
                 frontier = compute_efficient_frontier(prices, n_points=30, risk_free_rate=risk_free_rate)
@@ -76,6 +84,7 @@ def create_app():
                     error=error,
                     tickers_text=tickers_raw,
                     period=period,
+                    risk_free_rate=risk_free_rate,
                 )
 
             return render_template(
@@ -85,11 +94,18 @@ def create_app():
                 period=period,
             )
 
+        # Obtener tasa libre de riesgo para mostrar en la página inicial
+        try:
+            risk_free_rate = get_10year_treasury_rate()
+        except Exception:
+            risk_free_rate = 0.04  # Fallback en caso de error
+
         return render_template(
             "index.html",
             error=error,
             tickers_text="",
             period=defaults["period"],
+            risk_free_rate=risk_free_rate,
         )
 
     return app

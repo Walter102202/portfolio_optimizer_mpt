@@ -55,6 +55,10 @@
 
 {% block content %}
 <section class="py-5" id="como-funciona">
+    <div class="text-center mb-5">
+        <div class="eyebrow mb-2">Proceso de optimización</div>
+        <h2 class="display-6 fw-bold text-gradient">Cómo funciona</h2>
+    </div>
     <div class="row g-4">
         <div class="col-lg-4">
             <div class="info-card h-100">
@@ -81,6 +85,11 @@
 </section>
 
 <section class="py-5" id="metricas">
+    <div class="text-center mb-5">
+        <div class="eyebrow mb-2">Fundamentos matemáticos</div>
+        <h2 class="display-6 fw-bold text-gradient">Métricas utilizadas</h2>
+        <p class="text-muted mt-3">Utilizamos la tasa libre de riesgo del bono del Tesoro de EE.UU. a 10 años (Federal Reserve Bank of New York) · Valor actual: {{ risk_free_rate|pct(2) }}</p>
+    </div>
     <div class="row g-4">
         <div class="col-lg-4">
             <div class="metric-card">
