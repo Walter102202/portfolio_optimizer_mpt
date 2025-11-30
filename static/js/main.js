@@ -18,8 +18,8 @@ const POPULAR_TICKERS = {
     Consumer: ["KO", "PEP", "PG", "WMT", "HD", "NKE"]
 };
 
-// Base de datos S&P 500 - ticker y nombre de empresa para búsqueda
-const SP500_STOCKS = [
+// Base de datos de acciones estadounidenses - S&P 500 + NASDAQ (~350+ empresas)
+const US_STOCKS = [
     {t:"AAPL",n:"Apple"},{t:"MSFT",n:"Microsoft"},{t:"GOOGL",n:"Alphabet Google"},{t:"AMZN",n:"Amazon"},{t:"NVDA",n:"NVIDIA"},
     {t:"META",n:"Meta Facebook"},{t:"TSLA",n:"Tesla"},{t:"BRK.B",n:"Berkshire Hathaway"},{t:"LLY",n:"Eli Lilly"},{t:"V",n:"Visa"},
     {t:"UNH",n:"UnitedHealth"},{t:"XOM",n:"Exxon Mobil"},{t:"JPM",n:"JPMorgan Chase"},{t:"JNJ",n:"Johnson Johnson"},
@@ -83,12 +83,49 @@ const SP500_STOCKS = [
     {t:"SBAC",n:"SBA Communications"},{t:"CHD",n:"Church Dwight"},{t:"EQT",n:"EQT Corporation"},{t:"COF",n:"Capital One"},
     {t:"DFS",n:"Discover Financial"},{t:"PPL",n:"PPL Corporation"},{t:"ADM",n:"Archer Daniels Midland"},{t:"NUE",n:"Nucor"},
     {t:"IBM",n:"International Business Machines"},{t:"ZBH",n:"Zimmer Biomet"},{t:"AEE",n:"Ameren"},{t:"LYB",n:"LyondellBasell"},
-    {t:"VTR",n:"Ventas"},{t:"FIS",n:"Fidelity National Information"},{t:"BRO",n:"Brown Brown"},{t:"PH",n:"Parker Hannifin"}
+    {t:"VTR",n:"Ventas"},{t:"FIS",n:"Fidelity National Information"},{t:"BRO",n:"Brown Brown"},{t:"PH",n:"Parker Hannifin"},
+    // NASDAQ - Tech & Software
+    {t:"SHOP",n:"Shopify"},{t:"ZM",n:"Zoom Video"},{t:"DOCU",n:"DocuSign"},{t:"TEAM",n:"Atlassian"},
+    {t:"NET",n:"Cloudflare"},{t:"SPLK",n:"Splunk"},{t:"MNDY",n:"Monday.com"},{t:"ALGN",n:"Align Technology"},
+    {t:"MRVL",n:"Marvell Technology"},{t:"ON",n:"ON Semiconductor"},{t:"SMCI",n:"Super Micro Computer"},
+    {t:"ARM",n:"ARM Holdings"},{t:"ASML",n:"ASML Holding"},
+    // NASDAQ - Media & Entertainment
+    {t:"SPOT",n:"Spotify"},{t:"ROKU",n:"Roku"},{t:"PARA",n:"Paramount Global"},{t:"LYV",n:"Live Nation"},
+    // NASDAQ - E-commerce & Consumer
+    {t:"EBAY",n:"eBay"},{t:"ETSY",n:"Etsy"},{t:"W",n:"Wayfair"},
+    {t:"CHWY",n:"Chewy"},{t:"DASH",n:"DoorDash"},{t:"UBER",n:"Uber Technologies"},{t:"LYFT",n:"Lyft"},
+    {t:"EXPE",n:"Expedia"},{t:"MELI",n:"MercadoLibre"},{t:"SE",n:"Sea Limited Shopee"},
+    // NASDAQ - Semiconductors & Hardware
+    {t:"SWKS",n:"Skyworks Solutions"},{t:"QRVO",n:"Qorvo"},{t:"ENTG",n:"Entegris"},{t:"WOLF",n:"Wolfspeed"},
+    // NASDAQ - Biotech & Healthcare
+    {t:"BIIB",n:"Biogen"},{t:"MRNA",n:"Moderna"},{t:"BNTX",n:"BioNTech"},{t:"ILMN",n:"Illumina"},
+    {t:"SGEN",n:"Seagen"},{t:"ALNY",n:"Alnylam Pharmaceuticals"},{t:"NBIX",n:"Neurocrine"},
+    {t:"INCY",n:"Incyte"},{t:"EXAS",n:"Exact Sciences"},{t:"TECH",n:"Bio-Techne"},{t:"BMRN",n:"BioMarin"},
+    {t:"SRPT",n:"Sarepta Therapeutics"},{t:"JAZZ",n:"Jazz Pharmaceuticals"},{t:"IONS",n:"Ionis Pharmaceuticals"},
+    // NASDAQ - Electric Vehicles & Auto
+    {t:"RIVN",n:"Rivian Automotive"},{t:"LCID",n:"Lucid Group"},{t:"FSR",n:"Fisker"},{t:"NKLA",n:"Nikola"},
+    // NASDAQ - Fintech & Payments
+    {t:"SQ",n:"Block Square"},{t:"SOFI",n:"SoFi Technologies"},
+    {t:"AFRM",n:"Affirm Holdings"},{t:"UPST",n:"Upstart Holdings"},{t:"LC",n:"LendingClub"},{t:"NU",n:"Nu Holdings Nubank"},
+    {t:"BILL",n:"Bill.com"},{t:"FOUR",n:"Shift4 Payments"},{t:"HOOD",n:"Robinhood Markets"},
+    // NASDAQ - Gaming
+    {t:"ATVI",n:"Activision Blizzard"},{t:"U",n:"Unity Software"},{t:"DKNG",n:"DraftKings"},{t:"PENN",n:"Penn Entertainment"},
+    // NASDAQ - Clean Energy & Sustainability
+    {t:"ENPH",n:"Enphase Energy"},{t:"SEDG",n:"SolarEdge"},{t:"FSLR",n:"First Solar"},{t:"RUN",n:"Sunrun"},
+    {t:"PLUG",n:"Plug Power"},{t:"BE",n:"Bloom Energy"},{t:"BLNK",n:"Blink Charging"},{t:"CHPT",n:"ChargePoint"},
+    // NASDAQ - Cybersecurity
+    {t:"S",n:"SentinelOne"},{t:"TENB",n:"Tenable"},{t:"QLYS",n:"Qualys"},
+    // NASDAQ - Cloud & Infrastructure
+    {t:"MDB",n:"MongoDB"},{t:"CFLT",n:"Confluent"},{t:"ESTC",n:"Elastic"},{t:"DBX",n:"Dropbox"},{t:"BOX",n:"Box"},
+    // NASDAQ - Communication & Social
+    {t:"BMBL",n:"Bumble"},{t:"RDDT",n:"Reddit"},
+    // NASDAQ - Chinese ADRs
+    {t:"BIDU",n:"Baidu"},{t:"IQ",n:"iQIYI"},{t:"TCOM",n:"Trip.com"},{t:"WB",n:"Weibo"}
 ];
 
 // Crear índice de búsqueda para acceso rápido
 const STOCK_SEARCH_INDEX = {};
-SP500_STOCKS.forEach(stock => {
+US_STOCKS.forEach(stock => {
     const searchTerms = `${stock.t} ${stock.n}`.toLowerCase();
     STOCK_SEARCH_INDEX[stock.t] = { ticker: stock.t, name: stock.n, searchTerms };
 });
