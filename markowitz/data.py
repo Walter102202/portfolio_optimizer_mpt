@@ -2,9 +2,10 @@ import pandas as pd
 import yfinance as yf
 
 
-def get_price_data(tickers, period="5y", interval="1d"):
+def get_price_data(tickers, period="5y"):
     """
     Descarga precios ajustados para los tickers indicados.
+    Siempre usa intervalo diario para cálculos precisos.
     Devuelve DataFrame con columnas en el mismo orden de `tickers`.
     """
     if not tickers:
@@ -13,7 +14,7 @@ def get_price_data(tickers, period="5y", interval="1d"):
     data = yf.download(
         tickers=tickers,
         period=period,
-        interval=interval,
+        interval="1d",  # Siempre diario para cálculos precisos
         group_by="ticker",
         auto_adjust=False,
         progress=False,

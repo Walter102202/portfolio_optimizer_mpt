@@ -23,12 +23,11 @@ def create_app():
     def index():
         error = None
         result = None
-        defaults = {"period": "5y", "interval": "1d"}
+        defaults = {"period": "5y"}
 
         if request.method == "POST":
             tickers_raw = request.form.get("tickers", "")
             period = request.form.get("period", defaults["period"])
-            interval = request.form.get("interval", defaults["interval"])
             tickers = _parse_tickers(tickers_raw)
 
             if not (5 <= len(tickers) <= 20):
@@ -38,11 +37,10 @@ def create_app():
                     error=error,
                     tickers_text=tickers_raw,
                     period=period,
-                    interval=interval,
                 )
 
             try:
-                prices = get_price_data(tickers, period=period, interval=interval)
+                prices = get_price_data(tickers, period=period)
                 opt = optimize_portfolio(prices)
                 frontier = compute_efficient_frontier(prices, n_points=30)
 
@@ -73,7 +71,6 @@ def create_app():
                     error=error,
                     tickers_text=tickers_raw,
                     period=period,
-                    interval=interval,
                 )
 
             return render_template(
@@ -81,7 +78,6 @@ def create_app():
                 result=result,
                 tickers=tickers,
                 period=period,
-                interval=interval,
             )
 
         return render_template(
@@ -89,7 +85,6 @@ def create_app():
             error=error,
             tickers_text="",
             period=defaults["period"],
-            interval=defaults["interval"],
         )
 
     return app

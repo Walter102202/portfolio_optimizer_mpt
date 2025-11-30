@@ -8,7 +8,7 @@
             <div class="mb-3 mb-lg-0">
                 <div class="eyebrow mb-2">Resultado de optimización</div>
                 <h1 class="h4 text-light mb-2">Portafolio con Sharpe óptimo</h1>
-                <p class="text-muted mb-0">Periodo: {{ period }} · Intervalo: {{ interval }}</p>
+                <p class="text-muted mb-0">Datos históricos: {{ period }} · Resultados anualizados</p>
             </div>
             <a class="btn btn-primary btn-lg" href="{{ url_for('index') }}">Calcular otro portafolio</a>
         </div>
@@ -20,13 +20,13 @@
 <div class="row g-4 mb-4">
     <div class="col-md-4">
         <div class="kpi-card gradient">
-            <p class="text-muted small mb-1">Retorno esperado</p>
+            <p class="text-muted small mb-1">Retorno esperado (anual)</p>
             <h3 class="text-light mb-0">{{ result.expected_return|pct(2) }}</h3>
         </div>
     </div>
     <div class="col-md-4">
         <div class="kpi-card gradient">
-            <p class="text-muted small mb-1">Volatilidad</p>
+            <p class="text-muted small mb-1">Volatilidad (anual)</p>
             <h3 class="text-light mb-0">{{ result.volatility|pct(2) }}</h3>
         </div>
     </div>
@@ -169,7 +169,7 @@
                 x: {
                     title: {
                         display: true,
-                        text: 'Volatilidad (%)',
+                        text: 'Volatilidad Anual (%)',
                         color: '#9ca3af'
                     },
                     ticks: { color: '#9ca3af' },
@@ -178,7 +178,7 @@
                 y: {
                     title: {
                         display: true,
-                        text: 'Retorno Esperado (%)',
+                        text: 'Retorno Esperado Anual (%)',
                         color: '#9ca3af'
                     },
                     ticks: { color: '#9ca3af' },
