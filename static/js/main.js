@@ -26,14 +26,34 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Suavizar scroll a secciones internas
-    document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+    document.querySelectorAll('a[href*="#"]').forEach((anchor) => {
         anchor.addEventListener("click", function (e) {
-            const targetId = this.getAttribute("href").substring(1);
+            const href = this.getAttribute("href");
+            const hashIndex = href.indexOf("#");
+            if (hashIndex === -1) return;
+
+            const targetId = href.substring(hashIndex + 1);
             const targetEl = document.getElementById(targetId);
+
+            // Si el elemento existe en la página actual, hacer scroll suave
             if (targetEl) {
                 e.preventDefault();
                 targetEl.scrollIntoView({ behavior: "smooth", block: "start" });
+                // Actualizar el hash en la URL sin recargar
+                history.pushState(null, null, "#" + targetId);
             }
+            // Si no existe, permitir navegación normal (el navegador irá a la otra página)
         });
     });
+
+    // Si la página carga con un hash, hacer scroll suave a esa sección
+    if (window.location.hash) {
+        const targetId = window.location.hash.substring(1);
+        const targetEl = document.getElementById(targetId);
+        if (targetEl) {
+            setTimeout(() => {
+                targetEl.scrollIntoView({ behavior: "smooth", block: "start" });
+            }, 100);
+        }
+    }
 });
