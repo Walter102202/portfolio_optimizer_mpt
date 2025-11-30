@@ -9,40 +9,44 @@ function parseTickers(raw) {
         .filter((t) => t.length > 0);
 }
 
+// Debug: capturar todos los clicks
+document.addEventListener("click", (e) => {
+    if (e.target.closest("a")) {
+        const link = e.target.closest("a");
+        console.log("CLICK EN ENLACE:", {
+            text: link.textContent.trim(),
+            href: link.getAttribute("href"),
+            classes: link.className,
+            defaultPrevented: e.defaultPrevented
+        });
+    }
+}, true);
+
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("portfolio-form");
     const spinner = document.getElementById("spinner");
 
-    if (!form) return;
+    if (form) {
+        form.addEventListener("submit", (e) => {
+            const tickers = parseTickers(form.tickers.value || "");
+            if (tickers.length < 5 || tickers.length > 20) {
+                e.preventDefault();
+                alert("Debes ingresar entre 5 y 20 tickers.");
+                return;
+            }
+            spinner?.classList.remove("d-none");
+        });
+    }
 
-    form.addEventListener("submit", (e) => {
-        const tickers = parseTickers(form.tickers.value || "");
-        if (tickers.length < 5 || tickers.length > 20) {
-            e.preventDefault();
-            alert("Debes ingresar entre 5 y 20 tickers.");
-            return;
-        }
-        spinner?.classList.remove("d-none");
-    });
-
-    // Suavizar scroll a secciones internas
-    document.querySelectorAll('a[href*="#"]').forEach((anchor) => {
+    // Scroll suave solo para enlaces que apuntan a anclas en la misma página
+    document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
         anchor.addEventListener("click", function (e) {
-            const href = this.getAttribute("href");
-            const hashIndex = href.indexOf("#");
-            if (hashIndex === -1) return;
-
-            const targetId = href.substring(hashIndex + 1);
+            const targetId = this.getAttribute("href").substring(1);
             const targetEl = document.getElementById(targetId);
-
-            // Si el elemento existe en la página actual, hacer scroll suave
             if (targetEl) {
                 e.preventDefault();
                 targetEl.scrollIntoView({ behavior: "smooth", block: "start" });
-                // Actualizar el hash en la URL sin recargar
-                history.pushState(null, null, "#" + targetId);
             }
-            // Si no existe, permitir navegación normal (el navegador irá a la otra página)
         });
     });
 

@@ -4,6 +4,7 @@ from flask import Flask, render_template, request
 
 from markowitz.data import get_price_data
 from markowitz.optimizer import optimize_portfolio, compute_efficient_frontier
+from markowitz.risk_free_rate import get_10year_treasury_rate
 
 load_dotenv()
 
@@ -40,9 +41,12 @@ def create_app():
                 )
 
             try:
+                # Obtener tasa libre de riesgo del bono del tesoro a 10 años
+                risk_free_rate = get_10year_treasury_rate()
+
                 prices = get_price_data(tickers, period=period)
-                opt = optimize_portfolio(prices)
-                frontier = compute_efficient_frontier(prices, n_points=30)
+                opt = optimize_portfolio(prices, risk_free_rate=risk_free_rate)
+                frontier = compute_efficient_frontier(prices, n_points=30, risk_free_rate=risk_free_rate)
 
                 rows = []
                 for i, ticker in enumerate(opt["tickers"]):
@@ -61,6 +65,7 @@ def create_app():
                     "volatility": opt["volatility"],
                     "sharpe": opt["sharpe"],
                     "frontier": frontier,
+                    "risk_free_rate": risk_free_rate,
                 }
             except Exception as exc:  # noqa: BLE001
                 error = str(exc)

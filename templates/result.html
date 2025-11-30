@@ -8,7 +8,7 @@
             <div class="mb-3 mb-lg-0">
                 <div class="eyebrow mb-2">Resultado de optimización</div>
                 <h1 class="h4 text-light mb-2">Portafolio con Sharpe óptimo</h1>
-                <p class="text-muted mb-0">Datos históricos: {{ period }} · Resultados anualizados</p>
+                <p class="text-muted mb-0">Datos históricos: {{ period }} · Resultados anualizados · Rf: {{ result.risk_free_rate|pct(2) }}</p>
             </div>
             <a class="btn btn-primary btn-lg" href="{{ url_for('index') }}">Calcular otro portafolio</a>
         </div>
@@ -18,22 +18,29 @@
 
 {% block content %}
 <div class="row g-4 mb-4">
-    <div class="col-md-4">
+    <div class="col-md-3">
         <div class="kpi-card gradient">
             <p class="text-muted small mb-1">Retorno esperado (anual)</p>
             <h3 class="text-light mb-0">{{ result.expected_return|pct(2) }}</h3>
         </div>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-3">
         <div class="kpi-card gradient">
             <p class="text-muted small mb-1">Volatilidad (anual)</p>
             <h3 class="text-light mb-0">{{ result.volatility|pct(2) }}</h3>
         </div>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-3">
         <div class="kpi-card gradient">
-            <p class="text-muted small mb-1">Sharpe</p>
+            <p class="text-muted small mb-1">Sharpe Ratio</p>
             <h3 class="text-light mb-0">{{ '%.2f'|format(result.sharpe) }}</h3>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="kpi-card">
+            <p class="text-muted small mb-1">Tasa libre de riesgo</p>
+            <h3 class="text-light mb-0">{{ result.risk_free_rate|pct(2) }}</h3>
+            <p class="text-muted small mb-0">Treasury 10Y</p>
         </div>
     </div>
 </div>
@@ -87,6 +94,7 @@
     const assets = {{ result.frontier.individual_assets | tojson }};
     const optimalVol = {{ result.volatility }};
     const optimalRet = {{ result.expected_return }};
+    const riskFreeRate = {{ result.risk_free_rate }};
 
     // Convertir a porcentaje
     const frontierData = frontierVols.map((vol, i) => ({
@@ -105,11 +113,39 @@
         y: optimalRet * 100
     }];
 
+    // Punto de tasa libre de riesgo (volatilidad = 0)
+    const riskFreePoint = [{
+        x: 0,
+        y: riskFreeRate * 100
+    }];
+
+    // Capital Market Line (CML): línea desde Rf hasta el portafolio óptimo y más allá
+    // La CML tiene pendiente = (Retorno_Portfolio - Rf) / Volatilidad_Portfolio = Sharpe Ratio
+    const sharpeRatio = {{ result.sharpe }};
+    const maxVol = Math.max(...frontierVols) * 100 * 1.2; // Extender 20% más
+    const cmlData = [
+        { x: 0, y: riskFreeRate * 100 },
+        { x: maxVol, y: riskFreeRate * 100 + sharpeRatio * maxVol }
+    ];
+
     const ctx = document.getElementById('frontierChart').getContext('2d');
     new Chart(ctx, {
         type: 'scatter',
         data: {
             datasets: [
+                {
+                    label: 'Línea de Mercado (CML)',
+                    data: cmlData,
+                    borderColor: 'rgba(251, 191, 36, 1)',
+                    backgroundColor: 'rgba(251, 191, 36, 0.1)',
+                    showLine: true,
+                    fill: false,
+                    tension: 0,
+                    pointRadius: 0,
+                    borderWidth: 2,
+                    borderDash: [5, 5],
+                    order: 3
+                },
                 {
                     label: 'Frontera Eficiente',
                     data: frontierData,
@@ -132,7 +168,18 @@
                     order: 1
                 },
                 {
-                    label: 'Portafolio Optimo',
+                    label: 'Tasa Libre de Riesgo',
+                    data: riskFreePoint,
+                    backgroundColor: 'rgba(251, 191, 36, 1)',
+                    borderColor: 'rgba(255, 255, 255, 1)',
+                    pointRadius: 8,
+                    pointHoverRadius: 10,
+                    borderWidth: 2,
+                    pointStyle: 'rect',
+                    order: 0
+                },
+                {
+                    label: 'Portafolio Óptimo (Tangente)',
                     data: optimalPoint,
                     backgroundColor: 'rgba(16, 185, 129, 1)',
                     borderColor: 'rgba(255, 255, 255, 1)',
@@ -157,8 +204,14 @@
                     callbacks: {
                         label: function(context) {
                             const point = context.raw;
-                            if (context.datasetIndex === 1) {
+                            const datasetLabel = context.dataset.label;
+
+                            if (datasetLabel === 'Activos Individuales') {
                                 return `${assetData[context.dataIndex].label}: Vol ${point.x.toFixed(2)}%, Ret ${point.y.toFixed(2)}%`;
+                            } else if (datasetLabel === 'Tasa Libre de Riesgo') {
+                                return `Rf: ${point.y.toFixed(2)}% (sin riesgo)`;
+                            } else if (datasetLabel === 'Portafolio Óptimo (Tangente)') {
+                                return `Óptimo: Vol ${point.x.toFixed(2)}%, Ret ${point.y.toFixed(2)}%, Sharpe ${sharpeRatio.toFixed(2)}`;
                             }
                             return `Vol: ${point.x.toFixed(2)}%, Ret: ${point.y.toFixed(2)}%`;
                         }
