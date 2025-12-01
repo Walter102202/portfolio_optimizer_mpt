@@ -1,6 +1,6 @@
 # Markowitz Portfolio Optimizer (Flask)
 
-Aplicación mínima en Flask para calcular el portafolio óptimo (ratio de Sharpe) usando datos históricos de Yahoo Finance.
+Aplicación en Flask para calcular el portafolio óptimo (ratio de Sharpe) usando datos históricos de Yahoo Finance.
 
 ## Requisitos
 
