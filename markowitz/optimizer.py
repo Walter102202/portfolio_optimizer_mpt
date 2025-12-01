@@ -5,18 +5,25 @@ from scipy.optimize import minimize
 TRADING_DAYS_PER_YEAR = 252
 
 
-def compute_efficient_frontier(price_df, n_points=50, risk_free_rate=0.0):
+def compute_efficient_frontier(price_df, n_points=50, risk_free_rate=0.0, expected_returns_annual=None):
     """
     Calcula la frontera eficiente generando portafolios de mínima varianza
     para diferentes niveles de retorno objetivo.
     Todos los resultados están anualizados.
+    expected_returns_annual: Series opcional con retornos esperados anualizados (CAPM).
     Devuelve dict con arrays de volatilidades, retornos, y activos individuales.
     """
     returns = price_df.pct_change().dropna()
-    mean_returns = returns.mean()  # Retornos diarios
     cov_matrix = returns.cov()      # Covarianza diaria
-    tickers = list(mean_returns.index)
+    tickers = list(price_df.columns)
     n_assets = len(tickers)
+
+    # Usar retornos esperados CAPM si se proporcionan, sino usar promedios históricos
+    if expected_returns_annual is not None:
+        annual_mean_returns = expected_returns_annual
+    else:
+        mean_returns = returns.mean()
+        annual_mean_returns = mean_returns * TRADING_DAYS_PER_YEAR
 
     if n_assets < 2:
         raise ValueError("Se requieren al menos 2 activos válidos.")
@@ -24,15 +31,15 @@ def compute_efficient_frontier(price_df, n_points=50, risk_free_rate=0.0):
     def portfolio_volatility_daily(weights):
         return float(np.sqrt(np.dot(weights.T, np.dot(cov_matrix, weights))))
 
-    def portfolio_return_daily(weights):
-        return float(np.dot(weights, mean_returns))
+    def portfolio_return_annual(weights):
+        return float(np.dot(weights, annual_mean_returns))
 
     bounds = tuple((0.0, 1.0) for _ in range(n_assets))
     x0 = np.array([1.0 / n_assets] * n_assets)
 
-    # Encontrar retorno mínimo y máximo alcanzable (diario)
-    min_ret = float(mean_returns.min())
-    max_ret = float(mean_returns.max())
+    # Encontrar retorno mínimo y máximo alcanzable (anual)
+    min_ret = float(annual_mean_returns.min())
+    max_ret = float(annual_mean_returns.max())
 
     # Generar puntos de la frontera eficiente
     target_returns = np.linspace(min_ret, max_ret, n_points)
@@ -42,7 +49,7 @@ def compute_efficient_frontier(price_df, n_points=50, risk_free_rate=0.0):
     for target in target_returns:
         constraints = [
             {"type": "eq", "fun": lambda w: np.sum(w) - 1},
-            {"type": "eq", "fun": lambda w, t=target: portfolio_return_daily(w) - t},
+            {"type": "eq", "fun": lambda w, t=target: portfolio_return_annual(w) - t},
         ]
         result = minimize(
             portfolio_volatility_daily,
@@ -53,21 +60,21 @@ def compute_efficient_frontier(price_df, n_points=50, risk_free_rate=0.0):
             options={"disp": False, "maxiter": 500},
         )
         if result.success:
-            # Anualizar: vol_anual = vol_diaria * sqrt(252), ret_anual = ret_diario * 252
+            # Anualizar volatilidad: vol_anual = vol_diaria * sqrt(252)
             annual_vol = portfolio_volatility_daily(result.x) * np.sqrt(TRADING_DAYS_PER_YEAR)
-            annual_ret = target * TRADING_DAYS_PER_YEAR
-            frontier_vols.append(annual_vol)
-            frontier_rets.append(annual_ret)
+            frontier_vols.append(float(annual_vol))
+            frontier_rets.append(float(target))
 
     # Calcular posición de cada activo individual (anualizado)
     individual_assets = []
     for i, ticker in enumerate(tickers):
-        daily_ret = float(mean_returns.iloc[i])
+        annual_ret = float(annual_mean_returns.iloc[i])
         daily_vol = float(np.sqrt(cov_matrix.iloc[i, i]))
+        annual_vol = float(daily_vol * np.sqrt(TRADING_DAYS_PER_YEAR))
         individual_assets.append({
             "ticker": ticker,
-            "return": daily_ret * TRADING_DAYS_PER_YEAR,
-            "volatility": daily_vol * np.sqrt(TRADING_DAYS_PER_YEAR),
+            "return": annual_ret,
+            "volatility": annual_vol,
         })
 
     return {
@@ -77,24 +84,33 @@ def compute_efficient_frontier(price_df, n_points=50, risk_free_rate=0.0):
     }
 
 
-def optimize_portfolio(price_df, risk_free_rate=0.0):
+def optimize_portfolio(price_df, risk_free_rate=0.0, expected_returns_annual=None):
     """
     Optimiza el portafolio maximizando el ratio de Sharpe.
     Calcula con retornos diarios y anualiza los resultados (horizonte 1 año).
     risk_free_rate debe estar en términos anuales.
+    expected_returns_annual: Series opcional con retornos esperados anualizados (CAPM).
+                             Si no se proporciona, usa promedios históricos.
     Devuelve dict con pesos, retorno esperado, volatilidad y sharpe (todos anualizados).
     """
     returns = price_df.pct_change().dropna()
-    mean_returns = returns.mean()  # Retornos diarios
     cov_matrix = returns.cov()      # Covarianza diaria
-    tickers = list(mean_returns.index)
+    tickers = list(price_df.columns)
     n_assets = len(tickers)
 
     if n_assets < 2:
         raise ValueError("Se requieren al menos 2 activos válidos para optimizar.")
 
-    # Anualizar para la optimización
-    annual_mean_returns = mean_returns * TRADING_DAYS_PER_YEAR
+    # Usar retornos esperados CAPM si se proporcionan, sino usar promedios históricos
+    if expected_returns_annual is not None:
+        # Retornos ya están anualizados
+        annual_mean_returns = expected_returns_annual
+    else:
+        # Calcular promedios históricos y anualizar
+        mean_returns = returns.mean()
+        annual_mean_returns = mean_returns * TRADING_DAYS_PER_YEAR
+
+    # Anualizar covarianza
     annual_cov_matrix = cov_matrix * TRADING_DAYS_PER_YEAR
 
     def portfolio_performance_annual(weights):

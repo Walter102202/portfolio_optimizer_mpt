@@ -6,9 +6,10 @@
     <div class="container">
         <div class="d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center">
             <div class="mb-3 mb-lg-0">
-                <div class="eyebrow mb-2">Resultado de optimización</div>
+                <div class="eyebrow mb-2">Resultado de optimización (CAPM)</div>
                 <h1 class="h4 text-light mb-2">Portafolio con Sharpe óptimo</h1>
-                <p class="text-muted mb-0">Datos históricos: {{ period }} · Resultados anualizados · Rf: {{ result.risk_free_rate|pct(2) }}</p>
+                <p class="text-muted mb-0">Datos históricos: {{ period }} · Resultados anualizados</p>
+                <p class="text-muted small mb-0">Rf: {{ result.risk_free_rate|pct(2) }} · E(Rm): {{ result.market_return|pct(2) }} · Benchmark: S&P 500</p>
             </div>
             <a class="btn btn-primary btn-lg" href="{{ url_for('index') }}">Calcular otro portafolio</a>
         </div>
@@ -56,6 +57,8 @@
                 <thead>
                     <tr>
                         <th>Ticker</th>
+                        <th class="text-end">Beta</th>
+                        <th class="text-end">E(R) CAPM</th>
                         <th class="text-end">Peso</th>
                         <th class="text-end">Aporte retorno</th>
                         <th class="text-end">Aporte varianza</th>
@@ -65,6 +68,8 @@
                     {% for row in result.rows %}
                         <tr>
                             <td><span class="badge bg-primary-soft">{{ row.ticker }}</span></td>
+                            <td class="text-end">{{ '%.2f'|format(row.beta) }}</td>
+                            <td class="text-end">{{ row.expected_return_capm|pct(2) }}</td>
                             <td class="text-end">{{ row.weight|pct(2) }}</td>
                             <td class="text-end">{{ row.contrib_return|pct(2) }}</td>
                             <td class="text-end">{{ row.contrib_var|pct(2) }}</td>
