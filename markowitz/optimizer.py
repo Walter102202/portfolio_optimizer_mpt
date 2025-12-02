@@ -149,6 +149,14 @@ def optimize_portfolio(price_df, risk_free_rate=0.0, expected_returns_annual=Non
     marginal_var = annual_cov_matrix.dot(weights)
     contrib_var = weights * marginal_var
 
+    # Calcular volatilidad anual de cada activo individual
+    # volatilidad_anual = sqrt(varianza_diaria) * sqrt(252)
+    individual_volatilities = {}
+    for i, ticker in enumerate(tickers):
+        daily_vol = float(np.sqrt(cov_matrix.iloc[i, i]))
+        annual_vol = daily_vol * np.sqrt(TRADING_DAYS_PER_YEAR)
+        individual_volatilities[ticker] = float(annual_vol)
+
     return {
         "tickers": tickers,
         "weights": weights,
@@ -157,4 +165,5 @@ def optimize_portfolio(price_df, risk_free_rate=0.0, expected_returns_annual=Non
         "sharpe": sharpe,                    # Anualizado
         "contrib_return": contrib_return,    # Anualizado
         "contrib_var": contrib_var,          # Anualizado
+        "individual_volatilities": individual_volatilities,  # Volatilidad anual de cada activo
     }

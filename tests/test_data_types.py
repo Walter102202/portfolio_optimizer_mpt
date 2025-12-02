@@ -42,7 +42,7 @@ def validate_result_dict(result):
     # Validar cada fila
     if "rows" in result:
         for i, row in enumerate(result["rows"]):
-            for key in ["weight", "contrib_return", "contrib_var", "beta", "expected_return_capm"]:
+            for key in ["weight", "contrib_return", "contrib_var", "beta", "volatility", "expected_return_capm"]:
                 if key in row:
                     try:
                         validate_is_python_scalar(row[key], f"rows[{i}]['{key}']")

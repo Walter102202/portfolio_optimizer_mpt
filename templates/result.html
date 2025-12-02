@@ -58,6 +58,7 @@
                     <tr>
                         <th>Ticker</th>
                         <th class="text-end">Beta</th>
+                        <th class="text-end">Volatilidad</th>
                         <th class="text-end">E(R) CAPM</th>
                         <th class="text-end">Peso</th>
                         <th class="text-end">Aporte retorno</th>
@@ -69,6 +70,7 @@
                         <tr>
                             <td><span class="badge bg-primary-soft">{{ row.ticker }}</span></td>
                             <td class="text-end">{{ '%.2f'|format(row.beta) }}</td>
+                            <td class="text-end">{{ row.volatility|pct(2) }}</td>
                             <td class="text-end">{{ row.expected_return_capm|pct(2) }}</td>
                             <td class="text-end">{{ row.weight|pct(2) }}</td>
                             <td class="text-end">{{ row.contrib_return|pct(2) }}</td>
@@ -83,9 +85,43 @@
 
 <div class="card table-card shadow-sm mt-4">
     <div class="card-body">
-        <h2 class="h5 mb-3 text-light">Frontera Eficiente</h2>
-        <div style="position: relative; height: 400px;">
-            <canvas id="frontierChart"></canvas>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="h5 mb-0 text-light">Frontera Eficiente</h2>
+            <div class="d-flex align-items-center gap-3">
+                <label for="rfPercentage" class="text-muted mb-0" style="white-space: nowrap;">% Deuda Rf:</label>
+                <input
+                    type="number"
+                    id="rfPercentage"
+                    class="form-control form-control-sm"
+                    style="width: 100px;"
+                    min="0"
+                    max="100"
+                    step="1"
+                    value="0"
+                    placeholder="0-100"
+                />
+                <button id="resetRf" class="btn btn-sm btn-outline-secondary">Reset</button>
+            </div>
+        </div>
+        <div style="position: relative; height: 400px; width: 100%;">
+            <canvas id="frontierChart" style="display: block; max-width: 100%; max-height: 400px;"></canvas>
+        </div>
+        <div id="mixedPortfolioInfo" class="mt-3 p-3 bg-dark rounded" style="display: none;">
+            <h6 class="text-light mb-2">Portafolio Mixto (con deuda Rf)</h6>
+            <div class="row text-muted small">
+                <div class="col-md-3">
+                    <strong>% en Treasury:</strong> <span id="mixedRfPercent">0%</span>
+                </div>
+                <div class="col-md-3">
+                    <strong>% en Portafolio Óptimo:</strong> <span id="mixedOptPercent">100%</span>
+                </div>
+                <div class="col-md-3">
+                    <strong>Retorno Esperado:</strong> <span id="mixedReturn">-</span>
+                </div>
+                <div class="col-md-3">
+                    <strong>Volatilidad:</strong> <span id="mixedVolatility">-</span>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -93,48 +129,90 @@
 
 {% block scripts %}
 <script>
-(function() {
-    const frontierVols = {{ result.frontier.frontier_volatilities | tojson }};
-    const frontierRets = {{ result.frontier.frontier_returns | tojson }};
-    const assets = {{ result.frontier.individual_assets | tojson }};
-    const optimalVol = {{ result.volatility }};
-    const optimalRet = {{ result.expected_return }};
-    const riskFreeRate = {{ result.risk_free_rate }};
+// Esperar a que tanto el DOM como Chart.js estén listos
+window.addEventListener('load', function() {
+    console.log('=== INICIO DEBUG GRÁFICO ===');
+    console.log('DOM completamente cargado');
+    console.log('Chart.js disponible:', typeof Chart !== 'undefined');
 
-    // Convertir a porcentaje
-    const frontierData = frontierVols.map((vol, i) => ({
-        x: vol * 100,
-        y: frontierRets[i] * 100
-    }));
+    try {
+        const frontierVols = {{ result.frontier.frontier_volatilities | tojson }};
+        const frontierRets = {{ result.frontier.frontier_returns | tojson }};
+        const assets = {{ result.frontier.individual_assets | tojson }};
+        const optimalVol = {{ result.volatility }};
+        const optimalRet = {{ result.expected_return }};
+        const riskFreeRate = {{ result.risk_free_rate }};
+        const sharpeRatio = {{ result.sharpe }};
 
-    const assetData = assets.map(a => ({
-        x: a.volatility * 100,
-        y: a.return * 100,
-        label: a.ticker
-    }));
+        console.log('Datos del backend:', {
+            frontierVols: Array.isArray(frontierVols) ? frontierVols.length + ' puntos' : frontierVols,
+            frontierRets: Array.isArray(frontierRets) ? frontierRets.length + ' puntos' : frontierRets,
+            assets: Array.isArray(assets) ? assets.length + ' activos' : assets,
+            optimalVol: optimalVol,
+            optimalRet: optimalRet,
+            riskFreeRate: riskFreeRate,
+            sharpeRatio: sharpeRatio
+        });
 
-    const optimalPoint = [{
-        x: optimalVol * 100,
-        y: optimalRet * 100
-    }];
+        // Verificar que Chart.js esté disponible
+        if (typeof Chart === 'undefined') {
+            console.error('ERROR: Chart.js no está cargado');
+            alert('Error: Chart.js no pudo cargarse. Por favor recarga la página.');
+            return;
+        }
+        console.log('✓ Chart.js está disponible');
 
-    // Punto de tasa libre de riesgo (volatilidad = 0)
-    const riskFreePoint = [{
-        x: 0,
-        y: riskFreeRate * 100
-    }];
+        // Convertir a porcentaje
+        const frontierData = frontierVols.map((vol, i) => ({
+            x: vol * 100,
+            y: frontierRets[i] * 100
+        }));
 
-    // Capital Market Line (CML): línea desde Rf hasta el portafolio óptimo y más allá
-    // La CML tiene pendiente = (Retorno_Portfolio - Rf) / Volatilidad_Portfolio = Sharpe Ratio
-    const sharpeRatio = {{ result.sharpe }};
-    const maxVol = Math.max(...frontierVols) * 100 * 1.2; // Extender 20% más
-    const cmlData = [
-        { x: 0, y: riskFreeRate * 100 },
-        { x: maxVol, y: riskFreeRate * 100 + sharpeRatio * maxVol }
-    ];
+        const assetData = assets.map(a => ({
+            x: a.volatility * 100,
+            y: a.return * 100,
+            label: a.ticker
+        }));
 
-    const ctx = document.getElementById('frontierChart').getContext('2d');
-    new Chart(ctx, {
+        const optimalPoint = [{
+            x: optimalVol * 100,
+            y: optimalRet * 100
+        }];
+
+        const riskFreePoint = [{
+            x: 0,
+            y: riskFreeRate * 100
+        }];
+
+        // Capital Market Line (CML)
+        const maxVol = Math.max(...frontierVols, optimalVol) * 100 * 1.2;
+        const cmlData = [
+            { x: 0, y: riskFreeRate * 100 },
+            { x: maxVol, y: riskFreeRate * 100 + sharpeRatio * maxVol }
+        ];
+
+        const canvas = document.getElementById('frontierChart');
+        console.log('Canvas element:', canvas);
+
+        if (!canvas) {
+            console.error('ERROR: Canvas frontierChart no encontrado en el DOM');
+            alert('Error: No se encontró el elemento canvas para el gráfico');
+            return;
+        }
+        console.log('✓ Canvas encontrado');
+
+        const ctx = canvas.getContext('2d');
+        console.log('Context 2D:', ctx);
+
+        if (!ctx) {
+            console.error('ERROR: No se pudo obtener el contexto 2D del canvas');
+            return;
+        }
+        console.log('✓ Contexto 2D obtenido');
+
+        console.log('Creando instancia de Chart...');
+
+        const chart = new Chart(ctx, {
         type: 'scatter',
         data: {
             datasets: [
@@ -149,7 +227,7 @@
                     pointRadius: 0,
                     borderWidth: 2,
                     borderDash: [5, 5],
-                    order: 3
+                    order: 4
                 },
                 {
                     label: 'Frontera Eficiente',
@@ -161,7 +239,7 @@
                     tension: 0.3,
                     pointRadius: 0,
                     borderWidth: 2,
-                    order: 2
+                    order: 3
                 },
                 {
                     label: 'Activos Individuales',
@@ -170,7 +248,7 @@
                     borderColor: 'rgba(156, 163, 175, 1)',
                     pointRadius: 6,
                     pointHoverRadius: 8,
-                    order: 1
+                    order: 2
                 },
                 {
                     label: 'Tasa Libre de Riesgo',
@@ -181,7 +259,7 @@
                     pointHoverRadius: 10,
                     borderWidth: 2,
                     pointStyle: 'rect',
-                    order: 0
+                    order: 1
                 },
                 {
                     label: 'Portafolio Óptimo (Tangente)',
@@ -191,6 +269,17 @@
                     pointRadius: 10,
                     pointHoverRadius: 12,
                     borderWidth: 2,
+                    order: 0
+                },
+                {
+                    label: 'Portafolio Mixto (con Rf)',
+                    data: [],
+                    backgroundColor: 'rgba(249, 115, 22, 1)',
+                    borderColor: 'rgba(255, 255, 255, 1)',
+                    pointRadius: 10,
+                    pointHoverRadius: 12,
+                    borderWidth: 2,
+                    pointStyle: 'triangle',
                     order: 0
                 }
             ]
@@ -202,7 +291,14 @@
                 legend: {
                     labels: {
                         color: '#e5e7eb',
-                        usePointStyle: true
+                        usePointStyle: true,
+                        filter: function(item) {
+                            // Ocultar la leyenda del portafolio mixto inicialmente
+                            if (item.text === 'Portafolio Mixto (con Rf)') {
+                                return false;
+                            }
+                            return true;
+                        }
                     }
                 },
                 tooltip: {
@@ -217,6 +313,8 @@
                                 return `Rf: ${point.y.toFixed(2)}% (sin riesgo)`;
                             } else if (datasetLabel === 'Portafolio Óptimo (Tangente)') {
                                 return `Óptimo: Vol ${point.x.toFixed(2)}%, Ret ${point.y.toFixed(2)}%, Sharpe ${sharpeRatio.toFixed(2)}`;
+                            } else if (datasetLabel === 'Portafolio Mixto (con Rf)') {
+                                return `Mixto: Vol ${point.x.toFixed(2)}%, Ret ${point.y.toFixed(2)}%`;
                             }
                             return `Vol: ${point.x.toFixed(2)}%, Ret: ${point.y.toFixed(2)}%`;
                         }
@@ -245,6 +343,76 @@
             }
         }
     });
-})();
+
+    // Función para calcular y actualizar el portafolio mixto
+    function updateMixedPortfolio(rfPercentage) {
+        const rfPercent = parseFloat(rfPercentage) / 100;
+        const optPercent = 1 - rfPercent;
+
+        if (rfPercent === 0) {
+            // Ocultar el punto y la info
+            chart.data.datasets[5].data = [];
+            document.getElementById('mixedPortfolioInfo').style.display = 'none';
+
+            // Actualizar filtro de leyenda para ocultar el portafolio mixto
+            chart.options.plugins.legend.labels.filter = function(item) {
+                if (item.text === 'Portafolio Mixto (con Rf)') {
+                    return false;
+                }
+                return true;
+            };
+        } else {
+            // Calcular portafolio mixto
+            const mixedReturn = rfPercent * riskFreeRate + optPercent * optimalRet;
+            const mixedVol = optPercent * optimalVol;
+
+            // Actualizar el punto en el gráfico
+            chart.data.datasets[5].data = [{
+                x: mixedVol * 100,
+                y: mixedReturn * 100
+            }];
+
+            // Mostrar información
+            document.getElementById('mixedRfPercent').textContent = (rfPercent * 100).toFixed(1) + '%';
+            document.getElementById('mixedOptPercent').textContent = (optPercent * 100).toFixed(1) + '%';
+            document.getElementById('mixedReturn').textContent = (mixedReturn * 100).toFixed(2) + '%';
+            document.getElementById('mixedVolatility').textContent = (mixedVol * 100).toFixed(2) + '%';
+            document.getElementById('mixedPortfolioInfo').style.display = 'block';
+
+            // Actualizar filtro de leyenda para mostrar el portafolio mixto
+            chart.options.plugins.legend.labels.filter = function(item) {
+                return true;  // Mostrar todos los elementos
+            };
+        }
+
+        chart.update('none');  // Actualizar sin animación para mejor rendimiento
+    }
+
+    // Event listeners
+    const rfInput = document.getElementById('rfPercentage');
+    const resetButton = document.getElementById('resetRf');
+
+    rfInput.addEventListener('input', function(e) {
+        const value = parseFloat(e.target.value);
+        if (!isNaN(value) && value >= 0 && value <= 100) {
+            updateMixedPortfolio(value);
+        }
+    });
+
+    resetButton.addEventListener('click', function() {
+        rfInput.value = 0;
+        updateMixedPortfolio(0);
+    });
+
+        console.log('✓ GRÁFICO CREADO EXITOSAMENTE');
+        console.log('=== FIN DEBUG GRÁFICO ===');
+
+    } catch (error) {
+        console.error('❌ ERROR FATAL al crear el gráfico:', error);
+        console.error('Mensaje:', error.message);
+        console.error('Stack trace:', error.stack);
+        alert('Error al crear el gráfico: ' + error.message + '\nRevisa la consola para más detalles.');
+    }
+});
 </script>
 {% endblock %}

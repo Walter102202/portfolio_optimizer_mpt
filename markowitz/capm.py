@@ -12,35 +12,24 @@ def get_market_data(period="5y"):
     Retorna Series con precios ajustados del mercado.
     """
     try:
-        print(f"DEBUG CAPM - Descargando datos del mercado (^GSPC) para periodo: {period}")
         market = yf.download("^GSPC", period=period, interval="1d", progress=False, auto_adjust=False)
 
         if market.empty:
             raise ValueError("No se pudieron descargar datos del mercado (DataFrame vacío)")
 
-        print(f"DEBUG CAPM - Tipo de columns: {type(market.columns)}")
-        print(f"DEBUG CAPM - Columns: {market.columns.tolist()}")
-        print(f"DEBUG CAPM - Shape: {market.shape}")
-
         # Extraer Adj Close (yfinance devuelve un DataFrame con columnas: Open, High, Low, Close, Adj Close, Volume)
         if "Adj Close" in market.columns:
             adj_close = market["Adj Close"]
-            print(f"DEBUG CAPM - Adj Close extraído, shape antes de squeeze: {adj_close.shape}")
-            print(f"DEBUG CAPM - Tipo antes de squeeze: {type(adj_close)}")
 
             # Si es un DataFrame de una columna, convertir a Series
             if isinstance(adj_close, pd.DataFrame):
                 adj_close = adj_close.squeeze()
-                print(f"DEBUG CAPM - Convertido a Series con squeeze()")
 
-            print(f"DEBUG CAPM - Shape final: {adj_close.shape}")
-            print(f"DEBUG CAPM - Tipo final: {type(adj_close)}")
             return adj_close
         else:
             raise ValueError(f"No se encontró columna 'Adj Close'. Columnas disponibles: {market.columns.tolist()}")
 
     except Exception as e:
-        print(f"ERROR CAPM - Error descargando datos del mercado: {e}")
         raise ValueError(f"Error descargando datos del mercado: {e}")
 
 
@@ -65,10 +54,6 @@ def calculate_betas(price_df, market_prices):
     stock_returns = price_df.pct_change().dropna()
     market_returns = market_prices.pct_change().dropna()
 
-    print(f"DEBUG CAPM - Tipo de market_prices: {type(market_prices)}")
-    print(f"DEBUG CAPM - Tipo de market_returns después de pct_change: {type(market_returns)}")
-    print(f"DEBUG CAPM - Shape de market_returns: {market_returns.shape}")
-
     # Alinear fechas (intersección)
     common_dates = stock_returns.index.intersection(market_returns.index)
     print(f"DEBUG CAPM - Fechas comunes: {len(common_dates)}")
@@ -84,7 +69,6 @@ def calculate_betas(price_df, market_prices):
     market_var = market_returns.var()
 
     # Asegurar que market_var sea escalar
-    print(f"DEBUG CAPM - Tipo de market_var: {type(market_var)}")
     if isinstance(market_var, pd.Series):
         if len(market_var) == 1:
             market_var = float(market_var.iloc[0])
@@ -92,8 +76,6 @@ def calculate_betas(price_df, market_prices):
             raise ValueError(f"market_var es una Series con {len(market_var)} elementos")
     else:
         market_var = float(market_var)
-
-    print(f"DEBUG CAPM - Varianza del mercado: {market_var:.6f}")
 
     for ticker in stock_returns.columns:
         covariance = stock_returns[ticker].cov(market_returns)
@@ -108,7 +90,7 @@ def calculate_betas(price_df, market_prices):
             covariance = float(covariance)
 
         beta = covariance / market_var
-        betas[ticker] = float(beta)  # Asegurar que sea float Python
+        betas[ticker] = float(beta)
         print(f"DEBUG CAPM - Beta de {ticker}: {beta:.3f}")
 
     return pd.Series(betas)
@@ -158,11 +140,7 @@ def get_capm_expected_returns(price_df, risk_free_rate, period="5y"):
 
     # Calcular retorno del mercado (promedio histórico anualizado)
     market_returns = market_prices.pct_change().dropna()
-    print(f"DEBUG CAPM - Tipo de market_returns: {type(market_returns)}")
-    print(f"DEBUG CAPM - Shape de market_returns: {market_returns.shape}")
-
     market_return_annual = market_returns.mean() * 252  # Anualizar
-    print(f"DEBUG CAPM - Tipo de market_return_annual antes de conversión: {type(market_return_annual)}")
 
     # Asegurar que sea un float Python
     if isinstance(market_return_annual, pd.Series):
@@ -173,7 +151,6 @@ def get_capm_expected_returns(price_df, risk_free_rate, period="5y"):
     else:
         market_return_annual = float(market_return_annual)
 
-    print(f"DEBUG CAPM - Tipo de market_return_annual después de conversión: {type(market_return_annual)}")
     print(f"DEBUG CAPM - Retorno anual del mercado (S&P 500): {market_return_annual:.4f} ({market_return_annual*100:.2f}%)")
 
     # Calcular betas
