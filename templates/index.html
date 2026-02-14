@@ -47,7 +47,7 @@
                             <!-- Contador y validación -->
                             <div class="d-flex justify-content-between align-items-center mt-2">
                                 <div class="form-text text-muted">
-                                    <span id="ticker-counter">0</span> de 5-20 tickers seleccionados
+                                    <span id="ticker-counter">0</span> de 5-30 tickers seleccionados
                                 </div>
                                 <div id="ticker-validation" class="form-text"></div>
                             </div>
@@ -58,6 +58,26 @@
                                 <div id="quick-suggestions" class="d-flex flex-wrap gap-2"></div>
                             </div>
                         </div>
+
+                        <!-- Optimizar por índice -->
+                        <div class="mb-3">
+                            <div class="form-text text-muted mb-2">Optimizar por índice:</div>
+                            <div id="index-buttons" class="d-flex flex-wrap gap-2">
+                                <button type="button" class="index-btn" data-index="IPSA">
+                                    <span class="index-btn-label">IPSA Chile</span>
+                                    <span class="index-btn-count">30 acciones</span>
+                                </button>
+                                <button type="button" class="index-btn" data-index="SP500">
+                                    <span class="index-btn-label">S&P 500</span>
+                                    <span class="index-btn-count">Top 20</span>
+                                </button>
+                                <button type="button" class="index-btn" data-index="NASDAQ">
+                                    <span class="index-btn-label">NASDAQ</span>
+                                    <span class="index-btn-count">Top 20</span>
+                                </button>
+                            </div>
+                        </div>
+
                         <div class="row g-3">
                             <div class="col-12">
                                 <label for="period" class="form-label text-light">Periodo histórico</label>

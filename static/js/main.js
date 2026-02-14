@@ -18,6 +18,46 @@ const POPULAR_TICKERS = {
     Consumer: ["KO", "PEP", "PG", "WMT", "HD", "NKE"]
 };
 
+// Base de datos de acciones chilenas - IPSA (~30 empresas de la Bolsa de Santiago)
+const CHILEAN_STOCKS = [
+    {t:"CHILE.SN",n:"Banco de Chile"},{t:"SQM-B.SN",n:"SQM Sociedad Química Minera"},
+    {t:"FALABELLA.SN",n:"Falabella"},{t:"CENCOSUD.SN",n:"Cencosud"},
+    {t:"COPEC.SN",n:"Empresas Copec"},{t:"BSANTANDER.SN",n:"Banco Santander Chile"},
+    {t:"BCI.SN",n:"Banco BCI"},{t:"CMPC.SN",n:"Empresas CMPC"},
+    {t:"LTM.SN",n:"LATAM Airlines"},{t:"ENELAM.SN",n:"Enel Américas"},
+    {t:"ITAUCL.SN",n:"Itaú Corpbanca"},{t:"ILC.SN",n:"ILC"},
+    {t:"QUINENCO.SN",n:"Quiñenco"},{t:"ENELCHILE.SN",n:"Enel Chile"},
+    {t:"CCU.SN",n:"CCU Cervecerías Unidas"},{t:"VAPORES.SN",n:"CSAV Vapores"},
+    {t:"COLBUN.SN",n:"Colbún"},{t:"CAP.SN",n:"CAP"},
+    {t:"AGUAS-A.SN",n:"Aguas Andinas"},{t:"ANDINA-B.SN",n:"Embotelladora Andina"},
+    {t:"PARAUCO.SN",n:"Parque Arauco"},{t:"RIPLEY.SN",n:"Ripley"},
+    {t:"SECURITY.SN",n:"Grupo Security"},{t:"MALLPLAZA.SN",n:"Mallplaza"},
+    {t:"HABITAT.SN",n:"AFP Habitat"},{t:"SONDA.SN",n:"Sonda"},
+    {t:"ECL.SN",n:"Enel Generación Chile"},{t:"ORO_BLANCO.SN",n:"Oro Blanco"},
+    {t:"IAM.SN",n:"Inversiones Aguas Metropolitanas"},{t:"SM-CHILE_B.SN",n:"SM SAAM"}
+];
+
+// Índices predefinidos para optimización rápida
+const INDEX_TICKERS = {
+    IPSA: {
+        label: "IPSA Chile",
+        description: "30 acciones de la Bolsa de Santiago",
+        tickers: CHILEAN_STOCKS.map(s => s.t)
+    },
+    SP500: {
+        label: "S&P 500",
+        description: "Top 20 por capitalización",
+        tickers: ["AAPL","MSFT","GOOGL","AMZN","NVDA","META","TSLA","BRK.B","LLY","V",
+                  "UNH","XOM","JPM","JNJ","WMT","MA","PG","AVGO","HD","CVX"]
+    },
+    NASDAQ: {
+        label: "NASDAQ",
+        description: "Top 20 por capitalización",
+        tickers: ["AAPL","MSFT","GOOGL","AMZN","NVDA","META","TSLA","AVGO","COST","NFLX",
+                  "ADBE","AMD","QCOM","INTC","INTU","CMCSA","TXN","AMGN","AMAT","BKNG"]
+    }
+};
+
 // Base de datos de acciones estadounidenses - S&P 500 + NASDAQ (~350+ empresas)
 const US_STOCKS = [
     {t:"AAPL",n:"Apple"},{t:"MSFT",n:"Microsoft"},{t:"GOOGL",n:"Alphabet Google"},{t:"AMZN",n:"Amazon"},{t:"NVDA",n:"NVIDIA"},
@@ -123,9 +163,13 @@ const US_STOCKS = [
     {t:"BIDU",n:"Baidu"},{t:"IQ",n:"iQIYI"},{t:"TCOM",n:"Trip.com"},{t:"WB",n:"Weibo"}
 ];
 
-// Crear índice de búsqueda para acceso rápido
+// Crear índice de búsqueda para acceso rápido (US + Chile)
 const STOCK_SEARCH_INDEX = {};
 US_STOCKS.forEach(stock => {
+    const searchTerms = `${stock.t} ${stock.n}`.toLowerCase();
+    STOCK_SEARCH_INDEX[stock.t] = { ticker: stock.t, name: stock.n, searchTerms };
+});
+CHILEAN_STOCKS.forEach(stock => {
     const searchTerms = `${stock.t} ${stock.n}`.toLowerCase();
     STOCK_SEARCH_INDEX[stock.t] = { ticker: stock.t, name: stock.n, searchTerms };
 });
@@ -265,14 +309,14 @@ function validateTickerFormat(ticker) {
 
     const cleaned = ticker.trim().toUpperCase();
 
-    // Validar longitud (1-5 caracteres es común para tickers)
-    if (cleaned.length < 1 || cleaned.length > 5) {
-        return { valid: false, error: "El ticker debe tener entre 1 y 5 caracteres" };
+    // Validar longitud (1-15 caracteres para acomodar tickers internacionales como SM-CHILE_B.SN)
+    if (cleaned.length < 1 || cleaned.length > 15) {
+        return { valid: false, error: "El ticker debe tener entre 1 y 15 caracteres" };
     }
 
-    // Validar que solo contenga letras, números y opcionalmente punto o guión
-    if (!/^[A-Z0-9.\-]+$/.test(cleaned)) {
-        return { valid: false, error: "El ticker solo puede contener letras, números, puntos o guiones" };
+    // Validar que solo contenga letras, números, puntos, guiones o underscores
+    if (!/^[A-Z0-9.\-_]+$/.test(cleaned)) {
+        return { valid: false, error: "El ticker solo puede contener letras, números, puntos, guiones o guiones bajos" };
     }
 
     return { valid: true, ticker: cleaned };
@@ -312,22 +356,22 @@ function updateTickerCounter(count) {
         counterEl.classList.add("counter-warning");
         validationEl.classList.add("text-warning");
         validationEl.textContent = "✓ Mínimo alcanzado";
-    } else if (count >= 8 && count <= 18) {
+    } else if (count >= 8 && count <= 28) {
         counterEl.classList.add("counter-optimal");
         validationEl.classList.add("text-success");
         validationEl.textContent = "✓ Diversificación óptima";
-    } else if (count === 19 || count === 20) {
+    } else if (count >= 29 && count <= 30) {
         counterEl.classList.add("counter-warning");
         validationEl.classList.add("text-warning");
-        validationEl.textContent = count === 20 ? "⚠ Máximo alcanzado" : "⚠ Casi lleno";
+        validationEl.textContent = count === 30 ? "⚠ Máximo alcanzado" : "⚠ Casi lleno";
     }
 
     // Deshabilitar input si se alcanzó el máximo
     const searchInput = document.getElementById("ticker-search");
     if (searchInput) {
-        searchInput.disabled = count >= 20;
-        if (count >= 20) {
-            searchInput.placeholder = "Máximo de 20 tickers alcanzado";
+        searchInput.disabled = count >= 30;
+        if (count >= 30) {
+            searchInput.placeholder = "Máximo de 30 tickers alcanzado";
         } else {
             searchInput.placeholder = "Escribe un ticker (ej: AAPL) y presiona Enter...";
         }
@@ -450,6 +494,17 @@ class TickerSelector {
             }
         });
 
+        // Click en botones de índice
+        const indexButtonsContainer = document.getElementById("index-buttons");
+        if (indexButtonsContainer) {
+            indexButtonsContainer.addEventListener("click", (e) => {
+                const btn = e.target.closest(".index-btn");
+                if (btn && btn.dataset.index) {
+                    this.loadIndex(btn.dataset.index);
+                }
+            });
+        }
+
         // Cerrar dropdown al hacer click fuera
         document.addEventListener("click", (e) => {
             if (!this.searchInput.contains(e.target) && !this.resultsDropdown.contains(e.target)) {
@@ -530,8 +585,8 @@ class TickerSelector {
         }
 
         // Verificar límite máximo
-        if (this.selectedTickers.length >= 20) {
-            this.showError("Máximo 20 tickers permitidos");
+        if (this.selectedTickers.length >= 30) {
+            this.showError("Máximo 30 tickers permitidos");
             return;
         }
 
@@ -595,7 +650,29 @@ class TickerSelector {
 
         suggestions.forEach(badge => {
             const ticker = badge.dataset.ticker;
-            badge.disabled = this.selectedTickers.includes(ticker) || this.selectedTickers.length >= 20;
+            badge.disabled = this.selectedTickers.includes(ticker) || this.selectedTickers.length >= 30;
+        });
+    }
+
+    loadIndex(indexKey) {
+        const indexData = INDEX_TICKERS[indexKey];
+        if (!indexData) return;
+
+        // Limpiar selección actual
+        this.selectedTickers = [];
+        this.container.innerHTML = "";
+
+        // Agregar todos los tickers del índice
+        indexData.tickers.forEach(ticker => this.addTicker(ticker, false));
+
+        // Limpiar input y actualizar UI
+        this.searchInput.value = "";
+        this.updateUI();
+
+        // Marcar botón activo
+        const indexButtons = document.querySelectorAll(".index-btn");
+        indexButtons.forEach(btn => {
+            btn.classList.toggle("active", btn.dataset.index === indexKey);
         });
     }
 
@@ -629,9 +706,9 @@ document.addEventListener("DOMContentLoaded", () => {
         // Validación al enviar formulario
         form.addEventListener("submit", (e) => {
             const tickers = tickerSelector.selectedTickers;
-            if (tickers.length < 5 || tickers.length > 20) {
+            if (tickers.length < 5 || tickers.length > 30) {
                 e.preventDefault();
-                alert("Debes seleccionar entre 5 y 20 tickers.");
+                alert("Debes seleccionar entre 5 y 30 tickers.");
                 return;
             }
             spinner?.classList.remove("d-none");

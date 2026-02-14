@@ -472,6 +472,47 @@ textarea#tickers {
     }
 }
 
+/* ===== Index Selector Buttons ===== */
+
+.index-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.55rem 1rem;
+    background: linear-gradient(135deg, rgba(46, 155, 255, 0.06), rgba(46, 155, 255, 0.02));
+    border: 1px solid rgba(46, 155, 255, 0.2);
+    border-radius: 0.5rem;
+    color: #c8e6ff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.index-btn:hover {
+    background: linear-gradient(135deg, rgba(46, 155, 255, 0.15), rgba(46, 155, 255, 0.08));
+    border-color: rgba(46, 155, 255, 0.45);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(46, 155, 255, 0.15);
+}
+
+.index-btn.active {
+    background: linear-gradient(135deg, rgba(46, 155, 255, 0.25), rgba(46, 155, 255, 0.12));
+    border-color: rgba(46, 155, 255, 0.6);
+    color: #dff1ff;
+    box-shadow: 0 0 12px rgba(46, 155, 255, 0.2);
+}
+
+.index-btn-label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    letter-spacing: 0.02em;
+}
+
+.index-btn-count {
+    font-size: 0.75rem;
+    opacity: 0.6;
+    font-weight: 400;
+}
+
 /* Responsive */
 @media (max-width: 576px) {
     .ticker-chip {
@@ -482,5 +523,18 @@ textarea#tickers {
     .ticker-suggestion {
         font-size: 0.8rem;
         padding: 0.35rem 0.7rem;
+    }
+
+    .index-btn {
+        padding: 0.45rem 0.85rem;
+        font-size: 0.85rem;
+    }
+
+    .index-btn-label {
+        font-size: 0.85rem;
+    }
+
+    .index-btn-count {
+        font-size: 0.7rem;
     }
 }

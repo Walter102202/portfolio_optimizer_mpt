@@ -33,8 +33,8 @@ def create_app():
             period = request.form.get("period", defaults["period"])
             tickers = _parse_tickers(tickers_raw)
 
-            if not (5 <= len(tickers) <= 20):
-                error = "Debes ingresar entre 5 y 20 tickers."
+            if not (5 <= len(tickers) <= 30):
+                error = "Debes ingresar entre 5 y 30 tickers."
                 try:
                     risk_free_rate = get_10year_treasury_rate()
                 except Exception:
