@@ -125,6 +125,55 @@
         </div>
     </div>
 </div>
+<!-- Simulación Monte Carlo -->
+<div class="card table-card shadow-sm mt-4">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h2 class="h5 mb-1 text-light">Simulación Monte Carlo</h2>
+                <p class="text-muted small mb-0">{{ result.montecarlo.n_portfolios | default(5000) }} portafolios aleatorios generados</p>
+            </div>
+            <span class="badge-soft text-info bg-info-subtle">Monte Carlo</span>
+        </div>
+        <div style="position: relative; height: 400px; width: 100%;">
+            <canvas id="montecarloChart" style="display: block; max-width: 100%; max-height: 400px;"></canvas>
+        </div>
+        <div class="row mt-3">
+            <div class="col-md-6">
+                <div class="p-3 bg-dark rounded">
+                    <h6 class="text-light mb-2">Mejor Sharpe (simulado)</h6>
+                    <div class="row text-muted small">
+                        <div class="col-4">
+                            <strong>Retorno:</strong> {{ (result.montecarlo.best_sharpe.return * 100) | round(2) }}%
+                        </div>
+                        <div class="col-4">
+                            <strong>Volatilidad:</strong> {{ (result.montecarlo.best_sharpe.volatility * 100) | round(2) }}%
+                        </div>
+                        <div class="col-4">
+                            <strong>Sharpe:</strong> {{ result.montecarlo.best_sharpe.sharpe | round(2) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="p-3 bg-dark rounded">
+                    <h6 class="text-light mb-2">Mínima Volatilidad (simulada)</h6>
+                    <div class="row text-muted small">
+                        <div class="col-4">
+                            <strong>Retorno:</strong> {{ (result.montecarlo.min_vol.return * 100) | round(2) }}%
+                        </div>
+                        <div class="col-4">
+                            <strong>Volatilidad:</strong> {{ (result.montecarlo.min_vol.volatility * 100) | round(2) }}%
+                        </div>
+                        <div class="col-4">
+                            <strong>Sharpe:</strong> {{ result.montecarlo.min_vol.sharpe | round(2) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block scripts %}
@@ -412,6 +461,138 @@ window.addEventListener('load', function() {
         console.error('Mensaje:', error.message);
         console.error('Stack trace:', error.stack);
         alert('Error al crear el gráfico: ' + error.message + '\nRevisa la consola para más detalles.');
+    }
+
+    // --- Monte Carlo Chart ---
+    try {
+        const mcPortfolios = {{ result.montecarlo.portfolios | tojson }};
+        const mcBestSharpe = {{ result.montecarlo.best_sharpe | tojson }};
+        const mcMinVol = {{ result.montecarlo.min_vol | tojson }};
+        const mcOptimalVol = {{ result.volatility }};
+        const mcOptimalRet = {{ result.expected_return }};
+
+        // Scatter data coloreado por Sharpe ratio
+        const mcData = mcPortfolios.map(p => ({
+            x: p.volatility * 100,
+            y: p.return * 100,
+            sharpe: p.sharpe
+        }));
+
+        // Calcular rango de Sharpe para colorear
+        const sharpes = mcPortfolios.map(p => p.sharpe);
+        const minSharpe = Math.min(...sharpes);
+        const maxSharpe = Math.max(...sharpes);
+        const sharpeRange = maxSharpe - minSharpe || 1;
+
+        // Asignar colores según Sharpe (rojo bajo → amarillo medio → verde alto)
+        function sharpeColor(sharpe) {
+            const t = (sharpe - minSharpe) / sharpeRange;
+            const r = Math.round(255 * (1 - t));
+            const g = Math.round(255 * t);
+            return `rgba(${r}, ${g}, 80, 0.35)`;
+        }
+
+        const mcColors = mcPortfolios.map(p => sharpeColor(p.sharpe));
+
+        const mcCanvas = document.getElementById('montecarloChart');
+        const mcCtx = mcCanvas.getContext('2d');
+
+        new Chart(mcCtx, {
+            type: 'scatter',
+            data: {
+                datasets: [
+                    {
+                        label: 'Portafolios simulados',
+                        data: mcData,
+                        backgroundColor: mcColors,
+                        borderColor: mcColors,
+                        pointRadius: 2,
+                        pointHoverRadius: 4,
+                        order: 3
+                    },
+                    {
+                        label: 'Portafolio Óptimo (SLSQP)',
+                        data: [{ x: mcOptimalVol * 100, y: mcOptimalRet * 100 }],
+                        backgroundColor: 'rgba(16, 185, 129, 1)',
+                        borderColor: 'rgba(255, 255, 255, 1)',
+                        pointRadius: 10,
+                        pointHoverRadius: 12,
+                        borderWidth: 2,
+                        order: 0
+                    },
+                    {
+                        label: 'Mejor Sharpe (MC)',
+                        data: [{ x: mcBestSharpe.volatility * 100, y: mcBestSharpe.return * 100 }],
+                        backgroundColor: 'rgba(251, 191, 36, 1)',
+                        borderColor: 'rgba(255, 255, 255, 1)',
+                        pointRadius: 8,
+                        pointHoverRadius: 10,
+                        borderWidth: 2,
+                        pointStyle: 'star',
+                        order: 1
+                    },
+                    {
+                        label: 'Mínima Volatilidad (MC)',
+                        data: [{ x: mcMinVol.volatility * 100, y: mcMinVol.return * 100 }],
+                        backgroundColor: 'rgba(99, 102, 241, 1)',
+                        borderColor: 'rgba(255, 255, 255, 1)',
+                        pointRadius: 8,
+                        pointHoverRadius: 10,
+                        borderWidth: 2,
+                        pointStyle: 'rectRot',
+                        order: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: '#e5e7eb',
+                            usePointStyle: true
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const point = context.raw;
+                                const dsLabel = context.dataset.label;
+                                if (dsLabel === 'Portafolios simulados') {
+                                    return `Vol: ${point.x.toFixed(2)}%, Ret: ${point.y.toFixed(2)}%, Sharpe: ${point.sharpe.toFixed(2)}`;
+                                }
+                                return `${dsLabel}: Vol ${point.x.toFixed(2)}%, Ret ${point.y.toFixed(2)}%`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Volatilidad Anual (%)',
+                            color: '#9ca3af'
+                        },
+                        ticks: { color: '#9ca3af' },
+                        grid: { color: 'rgba(75, 85, 99, 0.3)' }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Retorno Esperado Anual (%)',
+                            color: '#9ca3af'
+                        },
+                        ticks: { color: '#9ca3af' },
+                        grid: { color: 'rgba(75, 85, 99, 0.3)' }
+                    }
+                }
+            }
+        });
+
+        console.log('✓ GRÁFICO MONTE CARLO CREADO EXITOSAMENTE');
+    } catch (mcError) {
+        console.error('Error al crear gráfico Monte Carlo:', mcError);
     }
 });
 </script>

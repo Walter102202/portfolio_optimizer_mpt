@@ -4,6 +4,7 @@ from flask import Flask, render_template, request
 
 from markowitz.data import get_price_data
 from markowitz.optimizer import optimize_portfolio, compute_efficient_frontier
+from markowitz.montecarlo import run_monte_carlo
 from markowitz.risk_free_rate import get_10year_treasury_rate
 from markowitz.capm import get_capm_expected_returns
 
@@ -65,6 +66,9 @@ def create_app():
                 opt = optimize_portfolio(prices, risk_free_rate=risk_free_rate, expected_returns_annual=expected_returns)
                 frontier = compute_efficient_frontier(prices, n_points=30, risk_free_rate=risk_free_rate, expected_returns_annual=expected_returns)
 
+                # Simulación Monte Carlo
+                mc = run_monte_carlo(prices, n_portfolios=5000, risk_free_rate=risk_free_rate, expected_returns_annual=expected_returns)
+
                 rows = []
                 for i, ticker in enumerate(opt["tickers"]):
                     rows.append(
@@ -85,6 +89,7 @@ def create_app():
                     "volatility": _to_float(opt["volatility"]),
                     "sharpe": _to_float(opt["sharpe"]),
                     "frontier": frontier,
+                    "montecarlo": mc,
                     "risk_free_rate": _to_float(risk_free_rate),
                     "market_return": _to_float(market_return),
                 }
