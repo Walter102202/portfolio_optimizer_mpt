@@ -33,8 +33,8 @@ const CHILEAN_STOCKS = [
     {t:"PARAUCO.SN",n:"Parque Arauco"},{t:"RIPLEY.SN",n:"Ripley"},
     {t:"SECURITY.SN",n:"Grupo Security"},{t:"MALLPLAZA.SN",n:"Mallplaza"},
     {t:"HABITAT.SN",n:"AFP Habitat"},{t:"SONDA.SN",n:"Sonda"},
-    {t:"ECL.SN",n:"Enel Generación Chile"},{t:"ORO_BLANCO.SN",n:"Oro Blanco"},
-    {t:"IAM.SN",n:"Inversiones Aguas Metropolitanas"},{t:"SM-CHILE_B.SN",n:"SM SAAM"}
+    {t:"ECL.SN",n:"Engie Energia Chile"},{t:"ORO-BLANCO.SN",n:"Oro Blanco"},
+    {t:"IAM.SN",n:"Inversiones Aguas Metropolitanas"},{t:"SMSAAM.SN",n:"SM SAAM"}
 ];
 
 // Índices predefinidos para optimización rápida
@@ -47,7 +47,7 @@ const INDEX_TICKERS = {
     SP500: {
         label: "S&P 500",
         description: "Top 20 por capitalización",
-        tickers: ["AAPL","MSFT","GOOGL","AMZN","NVDA","META","TSLA","BRK.B","LLY","V",
+        tickers: ["AAPL","MSFT","GOOGL","AMZN","NVDA","META","TSLA","BRK-B","LLY","V",
                   "UNH","XOM","JPM","JNJ","WMT","MA","PG","AVGO","HD","CVX"]
     },
     NASDAQ: {

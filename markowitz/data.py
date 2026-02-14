@@ -52,14 +52,22 @@ def get_price_data(tickers, period="5y"):
         else:
             raise ValueError(f"No se encontró 'Adj Close'. Columnas disponibles: {data.columns.tolist()}")
 
-    data = data.dropna(how="any")
-
     # Reordenar columnas según el orden de entrada y filtrar solo las que llegaron
     available = [t for t in tickers if t in data.columns]
     data = data.loc[:, available]
 
     if data.empty or len(available) == 0:
         raise ValueError("No se pudieron descargar precios válidos para los tickers ingresados.")
+
+    # Descartar tickers con más del 50% de datos faltantes
+    threshold = len(data) * 0.5
+    valid_cols = [c for c in data.columns if data[c].notna().sum() >= threshold]
+    if len(valid_cols) == 0:
+        raise ValueError("No se pudieron descargar precios válidos para los tickers ingresados.")
+    data = data[valid_cols]
+
+    # Forward-fill para llenar huecos por feriados/días sin operación, luego dropna
+    data = data.ffill().dropna(how="any")
 
     if data.shape[0] < 30:
         raise ValueError("Muy pocos datos históricos disponibles para optimizar.")
