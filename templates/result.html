@@ -125,15 +125,15 @@
         </div>
     </div>
 </div>
-<!-- Simulación Monte Carlo -->
+<!-- Simulación de portafolios aleatorios -->
 <div class="card table-card shadow-sm mt-4">
     <div class="card-body">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <div>
-                <h2 class="h5 mb-1 text-light" data-i18n="result.monte_carlo_title">Simulación Monte Carlo</h2>
+                <h2 class="h5 mb-1 text-light" data-i18n="result.monte_carlo_title">Simulación de portafolios aleatorios</h2>
                 <p class="text-muted small mb-0">{{ result.montecarlo.n_portfolios | default(5000) }} <span data-i18n="result.mc_portfolios_generated">portafolios aleatorios generados</span></p>
             </div>
-            <span class="badge-soft text-info bg-info-subtle" data-i18n="result.mc_badge">Monte Carlo</span>
+            <span class="badge-soft text-info bg-info-subtle" data-i18n="result.mc_badge">Simulación</span>
         </div>
         <div style="position: relative; height: 400px; width: 100%;">
             <canvas id="montecarloChart" style="display: block; max-width: 100%; max-height: 400px;"></canvas>
@@ -463,7 +463,7 @@ window.addEventListener('load', function() {
         console.error('Stack trace:', error.stack);
     }
 
-    // --- Monte Carlo Chart ---
+    // --- Random Portfolio Simulation Chart ---
     try {
         const mcPortfolios = {{ result.montecarlo.portfolios | tojson }};
         const mcBestSharpe = {{ result.montecarlo.best_sharpe | tojson }};
@@ -590,9 +590,9 @@ window.addEventListener('load', function() {
             }
         });
 
-        console.log('✓ GRÁFICO MONTE CARLO CREADO EXITOSAMENTE');
+        console.log('✓ GRÁFICO DE SIMULACIÓN CREADO EXITOSAMENTE');
     } catch (mcError) {
-        console.error('Error al crear gráfico Monte Carlo:', mcError);
+        console.error('Error al crear gráfico de simulación:', mcError);
     }
 
     // Listen for language changes and rebuild charts
@@ -617,7 +617,7 @@ window.addEventListener('load', function() {
             frontierChart.update('none');
         }
         if (monteCarloChart) {
-            // Update monte carlo chart labels
+            // Update simulation chart labels
             monteCarloChart.data.datasets[0].label = t('chart.simulated_portfolios');
             monteCarloChart.data.datasets[1].label = t('chart.optimal_slsqp');
             monteCarloChart.data.datasets[2].label = t('chart.best_sharpe_mc');
