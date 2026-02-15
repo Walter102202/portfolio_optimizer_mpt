@@ -6,12 +6,12 @@
     <div class="container">
         <div class="d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center">
             <div class="mb-3 mb-lg-0">
-                <div class="eyebrow mb-2">Resultado de optimización (CAPM)</div>
-                <h1 class="h4 text-light mb-2">Portafolio con Sharpe óptimo</h1>
-                <p class="text-muted mb-0">Datos históricos: {{ period }} · Resultados anualizados</p>
-                <p class="text-muted small mb-0">Rf: {{ result.risk_free_rate|pct(2) }} · E(Rm): {{ result.market_return|pct(2) }} · Benchmark: S&P 500</p>
+                <div class="eyebrow mb-2" data-i18n="result.eyebrow">Resultado de optimización (CAPM)</div>
+                <h1 class="h4 text-light mb-2" data-i18n="result.title">Portafolio con Sharpe óptimo</h1>
+                <p class="text-muted mb-0"><span data-i18n="result.historical_data">Datos históricos:</span> {{ period }} · <span data-i18n="result.annualized">Resultados anualizados</span></p>
+                <p class="text-muted small mb-0">Rf: {{ result.risk_free_rate|pct(2) }} · E(Rm): {{ result.market_return|pct(2) }} · <span data-i18n="result.benchmark">Benchmark: S&P 500</span></p>
             </div>
-            <a class="btn btn-primary btn-lg" href="{{ url_for('index') }}">Calcular otro portafolio</a>
+            <a class="btn btn-primary btn-lg" href="{{ url_for('index') }}" data-i18n="result.calculate_another">Calcular otro portafolio</a>
         </div>
     </div>
 </section>
@@ -21,27 +21,27 @@
 <div class="row g-4 mb-4">
     <div class="col-md-3">
         <div class="kpi-card gradient">
-            <p class="text-muted small mb-1">Retorno esperado (anual)</p>
+            <p class="text-muted small mb-1" data-i18n="result.expected_return">Retorno esperado (anual)</p>
             <h3 class="text-light mb-0">{{ result.expected_return|pct(2) }}</h3>
         </div>
     </div>
     <div class="col-md-3">
         <div class="kpi-card gradient">
-            <p class="text-muted small mb-1">Volatilidad (anual)</p>
+            <p class="text-muted small mb-1" data-i18n="result.volatility">Volatilidad (anual)</p>
             <h3 class="text-light mb-0">{{ result.volatility|pct(2) }}</h3>
         </div>
     </div>
     <div class="col-md-3">
         <div class="kpi-card gradient">
-            <p class="text-muted small mb-1">Sharpe Ratio</p>
+            <p class="text-muted small mb-1" data-i18n="result.sharpe_ratio">Sharpe Ratio</p>
             <h3 class="text-light mb-0">{{ '%.2f'|format(result.sharpe) }}</h3>
         </div>
     </div>
     <div class="col-md-3">
         <div class="kpi-card">
-            <p class="text-muted small mb-1">Tasa libre de riesgo</p>
+            <p class="text-muted small mb-1" data-i18n="result.risk_free_rate">Tasa libre de riesgo</p>
             <h3 class="text-light mb-0">{{ result.risk_free_rate|pct(2) }}</h3>
-            <p class="text-muted small mb-0">Treasury 10Y</p>
+            <p class="text-muted small mb-0" data-i18n="result.treasury_10y">Treasury 10Y</p>
         </div>
     </div>
 </div>
@@ -49,20 +49,20 @@
 <div class="card table-card shadow-sm">
     <div class="card-body">
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <h2 class="h5 mb-0 text-light">Pesos óptimos</h2>
-            <span class="badge-soft text-primary bg-primary-subtle">Restricción sin cortos</span>
+            <h2 class="h5 mb-0 text-light" data-i18n="result.optimal_weights">Pesos óptimos</h2>
+            <span class="badge-soft text-primary bg-primary-subtle" data-i18n="result.long_only_badge">Restricción sin cortos</span>
         </div>
         <div class="table-responsive">
             <table class="table align-middle table-dark table-hover">
                 <thead>
                     <tr>
-                        <th>Ticker</th>
-                        <th class="text-end">Beta</th>
-                        <th class="text-end">Volatilidad</th>
-                        <th class="text-end">E(R) CAPM</th>
-                        <th class="text-end">Peso</th>
-                        <th class="text-end">Aporte retorno</th>
-                        <th class="text-end">Aporte varianza</th>
+                        <th data-i18n="result.th_ticker">Ticker</th>
+                        <th class="text-end" data-i18n="result.th_beta">Beta</th>
+                        <th class="text-end" data-i18n="result.th_volatility">Volatilidad</th>
+                        <th class="text-end" data-i18n="result.th_er_capm">E(R) CAPM</th>
+                        <th class="text-end" data-i18n="result.th_weight">Peso</th>
+                        <th class="text-end" data-i18n="result.th_return_contrib">Aporte retorno</th>
+                        <th class="text-end" data-i18n="result.th_var_contrib">Aporte varianza</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -86,9 +86,9 @@
 <div class="card table-card shadow-sm mt-4">
     <div class="card-body">
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <h2 class="h5 mb-0 text-light">Frontera Eficiente</h2>
+            <h2 class="h5 mb-0 text-light" data-i18n="result.efficient_frontier">Frontera Eficiente</h2>
             <div class="d-flex align-items-center gap-3">
-                <label for="rfPercentage" class="text-muted mb-0" style="white-space: nowrap;">% Deuda Rf:</label>
+                <label for="rfPercentage" class="text-muted mb-0" style="white-space: nowrap;" data-i18n="result.rf_debt_pct">% Deuda Rf:</label>
                 <input
                     type="number"
                     id="rfPercentage"
@@ -100,26 +100,26 @@
                     value="0"
                     placeholder="0-100"
                 />
-                <button id="resetRf" class="btn btn-sm btn-outline-secondary">Reset</button>
+                <button id="resetRf" class="btn btn-sm btn-outline-secondary" data-i18n="result.reset">Reset</button>
             </div>
         </div>
         <div style="position: relative; height: 400px; width: 100%;">
             <canvas id="frontierChart" style="display: block; max-width: 100%; max-height: 400px;"></canvas>
         </div>
         <div id="mixedPortfolioInfo" class="mt-3 p-3 bg-dark rounded" style="display: none;">
-            <h6 class="text-light mb-2">Portafolio Mixto (con deuda Rf)</h6>
+            <h6 class="text-light mb-2" data-i18n="result.mixed_portfolio">Portafolio Mixto (con deuda Rf)</h6>
             <div class="row text-muted small">
                 <div class="col-md-3">
-                    <strong>% en Treasury:</strong> <span id="mixedRfPercent">0%</span>
+                    <strong data-i18n="result.pct_treasury">% en Treasury:</strong> <span id="mixedRfPercent">0%</span>
                 </div>
                 <div class="col-md-3">
-                    <strong>% en Portafolio Óptimo:</strong> <span id="mixedOptPercent">100%</span>
+                    <strong data-i18n="result.pct_optimal">% en Portafolio Óptimo:</strong> <span id="mixedOptPercent">100%</span>
                 </div>
                 <div class="col-md-3">
-                    <strong>Retorno Esperado:</strong> <span id="mixedReturn">-</span>
+                    <strong data-i18n="result.expected_return_label">Retorno Esperado:</strong> <span id="mixedReturn">-</span>
                 </div>
                 <div class="col-md-3">
-                    <strong>Volatilidad:</strong> <span id="mixedVolatility">-</span>
+                    <strong data-i18n="result.volatility_label">Volatilidad:</strong> <span id="mixedVolatility">-</span>
                 </div>
             </div>
         </div>
@@ -130,10 +130,10 @@
     <div class="card-body">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <div>
-                <h2 class="h5 mb-1 text-light">Simulación Monte Carlo</h2>
-                <p class="text-muted small mb-0">{{ result.montecarlo.n_portfolios | default(5000) }} portafolios aleatorios generados</p>
+                <h2 class="h5 mb-1 text-light" data-i18n="result.monte_carlo_title">Simulación Monte Carlo</h2>
+                <p class="text-muted small mb-0">{{ result.montecarlo.n_portfolios | default(5000) }} <span data-i18n="result.mc_portfolios_generated">portafolios aleatorios generados</span></p>
             </div>
-            <span class="badge-soft text-info bg-info-subtle">Monte Carlo</span>
+            <span class="badge-soft text-info bg-info-subtle" data-i18n="result.mc_badge">Monte Carlo</span>
         </div>
         <div style="position: relative; height: 400px; width: 100%;">
             <canvas id="montecarloChart" style="display: block; max-width: 100%; max-height: 400px;"></canvas>
@@ -141,32 +141,32 @@
         <div class="row mt-3">
             <div class="col-md-6">
                 <div class="p-3 bg-dark rounded">
-                    <h6 class="text-light mb-2">Mejor Sharpe (simulado)</h6>
+                    <h6 class="text-light mb-2" data-i18n="result.mc_best_sharpe">Mejor Sharpe (simulado)</h6>
                     <div class="row text-muted small">
                         <div class="col-4">
-                            <strong>Retorno:</strong> {{ (result.montecarlo.best_sharpe.return * 100) | round(2) }}%
+                            <strong data-i18n="result.mc_return">Retorno:</strong> {{ (result.montecarlo.best_sharpe.return * 100) | round(2) }}%
                         </div>
                         <div class="col-4">
-                            <strong>Volatilidad:</strong> {{ (result.montecarlo.best_sharpe.volatility * 100) | round(2) }}%
+                            <strong data-i18n="result.mc_volatility">Volatilidad:</strong> {{ (result.montecarlo.best_sharpe.volatility * 100) | round(2) }}%
                         </div>
                         <div class="col-4">
-                            <strong>Sharpe:</strong> {{ result.montecarlo.best_sharpe.sharpe | round(2) }}
+                            <strong data-i18n="result.mc_sharpe">Sharpe:</strong> {{ result.montecarlo.best_sharpe.sharpe | round(2) }}
                         </div>
                     </div>
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="p-3 bg-dark rounded">
-                    <h6 class="text-light mb-2">Mínima Volatilidad (simulada)</h6>
+                    <h6 class="text-light mb-2" data-i18n="result.mc_min_vol">Mínima Volatilidad (simulada)</h6>
                     <div class="row text-muted small">
                         <div class="col-4">
-                            <strong>Retorno:</strong> {{ (result.montecarlo.min_vol.return * 100) | round(2) }}%
+                            <strong data-i18n="result.mc_return">Retorno:</strong> {{ (result.montecarlo.min_vol.return * 100) | round(2) }}%
                         </div>
                         <div class="col-4">
-                            <strong>Volatilidad:</strong> {{ (result.montecarlo.min_vol.volatility * 100) | round(2) }}%
+                            <strong data-i18n="result.mc_volatility">Volatilidad:</strong> {{ (result.montecarlo.min_vol.volatility * 100) | round(2) }}%
                         </div>
                         <div class="col-4">
-                            <strong>Sharpe:</strong> {{ result.montecarlo.min_vol.sharpe | round(2) }}
+                            <strong data-i18n="result.mc_sharpe">Sharpe:</strong> {{ result.montecarlo.min_vol.sharpe | round(2) }}
                         </div>
                     </div>
                 </div>
@@ -183,6 +183,9 @@ window.addEventListener('load', function() {
     console.log('=== INICIO DEBUG GRÁFICO ===');
     console.log('DOM completamente cargado');
     console.log('Chart.js disponible:', typeof Chart !== 'undefined');
+
+    let frontierChart = null;
+    let monteCarloChart = null;
 
     try {
         const frontierVols = {{ result.frontier.frontier_volatilities | tojson }};
@@ -206,7 +209,7 @@ window.addEventListener('load', function() {
         // Verificar que Chart.js esté disponible
         if (typeof Chart === 'undefined') {
             console.error('ERROR: Chart.js no está cargado');
-            alert('Error: Chart.js no pudo cargarse. Por favor recarga la página.');
+            alert(t('error.chartjs_load'));
             return;
         }
         console.log('✓ Chart.js está disponible');
@@ -245,7 +248,6 @@ window.addEventListener('load', function() {
 
         if (!canvas) {
             console.error('ERROR: Canvas frontierChart no encontrado en el DOM');
-            alert('Error: No se encontró el elemento canvas para el gráfico');
             return;
         }
         console.log('✓ Canvas encontrado');
@@ -261,12 +263,12 @@ window.addEventListener('load', function() {
 
         console.log('Creando instancia de Chart...');
 
-        const chart = new Chart(ctx, {
+        frontierChart = new Chart(ctx, {
         type: 'scatter',
         data: {
             datasets: [
                 {
-                    label: 'Línea de Mercado (CML)',
+                    label: t('chart.cml'),
                     data: cmlData,
                     borderColor: 'rgba(251, 191, 36, 1)',
                     backgroundColor: 'rgba(251, 191, 36, 0.1)',
@@ -279,7 +281,7 @@ window.addEventListener('load', function() {
                     order: 4
                 },
                 {
-                    label: 'Frontera Eficiente',
+                    label: t('chart.efficient_frontier'),
                     data: frontierData,
                     borderColor: 'rgba(99, 102, 241, 1)',
                     backgroundColor: 'rgba(99, 102, 241, 0.1)',
@@ -291,7 +293,7 @@ window.addEventListener('load', function() {
                     order: 3
                 },
                 {
-                    label: 'Activos Individuales',
+                    label: t('chart.individual_assets'),
                     data: assetData,
                     backgroundColor: 'rgba(156, 163, 175, 0.8)',
                     borderColor: 'rgba(156, 163, 175, 1)',
@@ -300,7 +302,7 @@ window.addEventListener('load', function() {
                     order: 2
                 },
                 {
-                    label: 'Tasa Libre de Riesgo',
+                    label: t('chart.risk_free_rate'),
                     data: riskFreePoint,
                     backgroundColor: 'rgba(251, 191, 36, 1)',
                     borderColor: 'rgba(255, 255, 255, 1)',
@@ -311,7 +313,7 @@ window.addEventListener('load', function() {
                     order: 1
                 },
                 {
-                    label: 'Portafolio Óptimo (Tangente)',
+                    label: t('chart.optimal_portfolio'),
                     data: optimalPoint,
                     backgroundColor: 'rgba(16, 185, 129, 1)',
                     borderColor: 'rgba(255, 255, 255, 1)',
@@ -321,7 +323,7 @@ window.addEventListener('load', function() {
                     order: 0
                 },
                 {
-                    label: 'Portafolio Mixto (con Rf)',
+                    label: t('chart.mixed_portfolio'),
                     data: [],
                     backgroundColor: 'rgba(249, 115, 22, 1)',
                     borderColor: 'rgba(255, 255, 255, 1)',
@@ -342,8 +344,7 @@ window.addEventListener('load', function() {
                         color: '#e5e7eb',
                         usePointStyle: true,
                         filter: function(item) {
-                            // Ocultar la leyenda del portafolio mixto inicialmente
-                            if (item.text === 'Portafolio Mixto (con Rf)') {
+                            if (item.text === t('chart.mixed_portfolio')) {
                                 return false;
                             }
                             return true;
@@ -356,16 +357,16 @@ window.addEventListener('load', function() {
                             const point = context.raw;
                             const datasetLabel = context.dataset.label;
 
-                            if (datasetLabel === 'Activos Individuales') {
-                                return `${assetData[context.dataIndex].label}: Vol ${point.x.toFixed(2)}%, Ret ${point.y.toFixed(2)}%`;
-                            } else if (datasetLabel === 'Tasa Libre de Riesgo') {
-                                return `Rf: ${point.y.toFixed(2)}% (sin riesgo)`;
-                            } else if (datasetLabel === 'Portafolio Óptimo (Tangente)') {
-                                return `Óptimo: Vol ${point.x.toFixed(2)}%, Ret ${point.y.toFixed(2)}%, Sharpe ${sharpeRatio.toFixed(2)}`;
-                            } else if (datasetLabel === 'Portafolio Mixto (con Rf)') {
-                                return `Mixto: Vol ${point.x.toFixed(2)}%, Ret ${point.y.toFixed(2)}%`;
+                            if (datasetLabel === t('chart.individual_assets')) {
+                                return `${assetData[context.dataIndex].label}: ${t('chart.tooltip_vol')} ${point.x.toFixed(2)}%, ${t('chart.tooltip_ret')} ${point.y.toFixed(2)}%`;
+                            } else if (datasetLabel === t('chart.risk_free_rate')) {
+                                return `${t('chart.tooltip_rf')} ${point.y.toFixed(2)}% ${t('chart.tooltip_no_risk')}`;
+                            } else if (datasetLabel === t('chart.optimal_portfolio')) {
+                                return `${t('chart.tooltip_optimal')} ${t('chart.tooltip_vol')} ${point.x.toFixed(2)}%, ${t('chart.tooltip_ret')} ${point.y.toFixed(2)}%, Sharpe ${sharpeRatio.toFixed(2)}`;
+                            } else if (datasetLabel === t('chart.mixed_portfolio')) {
+                                return `${t('chart.tooltip_mixed')} ${t('chart.tooltip_vol')} ${point.x.toFixed(2)}%, ${t('chart.tooltip_ret')} ${point.y.toFixed(2)}%`;
                             }
-                            return `Vol: ${point.x.toFixed(2)}%, Ret: ${point.y.toFixed(2)}%`;
+                            return `${t('chart.tooltip_vol')}: ${point.x.toFixed(2)}%, ${t('chart.tooltip_ret')}: ${point.y.toFixed(2)}%`;
                         }
                     }
                 }
@@ -374,7 +375,7 @@ window.addEventListener('load', function() {
                 x: {
                     title: {
                         display: true,
-                        text: 'Volatilidad Anual (%)',
+                        text: t('chart.x_axis'),
                         color: '#9ca3af'
                     },
                     ticks: { color: '#9ca3af' },
@@ -383,7 +384,7 @@ window.addEventListener('load', function() {
                 y: {
                     title: {
                         display: true,
-                        text: 'Retorno Esperado Anual (%)',
+                        text: t('chart.y_axis'),
                         color: '#9ca3af'
                     },
                     ticks: { color: '#9ca3af' },
@@ -400,12 +401,12 @@ window.addEventListener('load', function() {
 
         if (rfPercent === 0) {
             // Ocultar el punto y la info
-            chart.data.datasets[5].data = [];
+            frontierChart.data.datasets[5].data = [];
             document.getElementById('mixedPortfolioInfo').style.display = 'none';
 
             // Actualizar filtro de leyenda para ocultar el portafolio mixto
-            chart.options.plugins.legend.labels.filter = function(item) {
-                if (item.text === 'Portafolio Mixto (con Rf)') {
+            frontierChart.options.plugins.legend.labels.filter = function(item) {
+                if (item.text === t('chart.mixed_portfolio')) {
                     return false;
                 }
                 return true;
@@ -416,7 +417,7 @@ window.addEventListener('load', function() {
             const mixedVol = optPercent * optimalVol;
 
             // Actualizar el punto en el gráfico
-            chart.data.datasets[5].data = [{
+            frontierChart.data.datasets[5].data = [{
                 x: mixedVol * 100,
                 y: mixedReturn * 100
             }];
@@ -429,12 +430,12 @@ window.addEventListener('load', function() {
             document.getElementById('mixedPortfolioInfo').style.display = 'block';
 
             // Actualizar filtro de leyenda para mostrar el portafolio mixto
-            chart.options.plugins.legend.labels.filter = function(item) {
-                return true;  // Mostrar todos los elementos
+            frontierChart.options.plugins.legend.labels.filter = function(item) {
+                return true;
             };
         }
 
-        chart.update('none');  // Actualizar sin animación para mejor rendimiento
+        frontierChart.update('none');
     }
 
     // Event listeners
@@ -460,7 +461,6 @@ window.addEventListener('load', function() {
         console.error('❌ ERROR FATAL al crear el gráfico:', error);
         console.error('Mensaje:', error.message);
         console.error('Stack trace:', error.stack);
-        alert('Error al crear el gráfico: ' + error.message + '\nRevisa la consola para más detalles.');
     }
 
     // --- Monte Carlo Chart ---
@@ -486,9 +486,9 @@ window.addEventListener('load', function() {
 
         // Asignar colores según Sharpe (rojo bajo → amarillo medio → verde alto)
         function sharpeColor(sharpe) {
-            const t = (sharpe - minSharpe) / sharpeRange;
-            const r = Math.round(255 * (1 - t));
-            const g = Math.round(255 * t);
+            const t_val = (sharpe - minSharpe) / sharpeRange;
+            const r = Math.round(255 * (1 - t_val));
+            const g = Math.round(255 * t_val);
             return `rgba(${r}, ${g}, 80, 0.35)`;
         }
 
@@ -497,12 +497,12 @@ window.addEventListener('load', function() {
         const mcCanvas = document.getElementById('montecarloChart');
         const mcCtx = mcCanvas.getContext('2d');
 
-        new Chart(mcCtx, {
+        monteCarloChart = new Chart(mcCtx, {
             type: 'scatter',
             data: {
                 datasets: [
                     {
-                        label: 'Portafolios simulados',
+                        label: t('chart.simulated_portfolios'),
                         data: mcData,
                         backgroundColor: mcColors,
                         borderColor: mcColors,
@@ -511,7 +511,7 @@ window.addEventListener('load', function() {
                         order: 3
                     },
                     {
-                        label: 'Portafolio Óptimo (SLSQP)',
+                        label: t('chart.optimal_slsqp'),
                         data: [{ x: mcOptimalVol * 100, y: mcOptimalRet * 100 }],
                         backgroundColor: 'rgba(16, 185, 129, 1)',
                         borderColor: 'rgba(255, 255, 255, 1)',
@@ -521,7 +521,7 @@ window.addEventListener('load', function() {
                         order: 0
                     },
                     {
-                        label: 'Mejor Sharpe (MC)',
+                        label: t('chart.best_sharpe_mc'),
                         data: [{ x: mcBestSharpe.volatility * 100, y: mcBestSharpe.return * 100 }],
                         backgroundColor: 'rgba(251, 191, 36, 1)',
                         borderColor: 'rgba(255, 255, 255, 1)',
@@ -532,7 +532,7 @@ window.addEventListener('load', function() {
                         order: 1
                     },
                     {
-                        label: 'Mínima Volatilidad (MC)',
+                        label: t('chart.min_vol_mc'),
                         data: [{ x: mcMinVol.volatility * 100, y: mcMinVol.return * 100 }],
                         backgroundColor: 'rgba(99, 102, 241, 1)',
                         borderColor: 'rgba(255, 255, 255, 1)',
@@ -559,10 +559,10 @@ window.addEventListener('load', function() {
                             label: function(context) {
                                 const point = context.raw;
                                 const dsLabel = context.dataset.label;
-                                if (dsLabel === 'Portafolios simulados') {
-                                    return `Vol: ${point.x.toFixed(2)}%, Ret: ${point.y.toFixed(2)}%, Sharpe: ${point.sharpe.toFixed(2)}`;
+                                if (dsLabel === t('chart.simulated_portfolios')) {
+                                    return `${t('chart.tooltip_vol')}: ${point.x.toFixed(2)}%, ${t('chart.tooltip_ret')}: ${point.y.toFixed(2)}%, Sharpe: ${point.sharpe.toFixed(2)}`;
                                 }
-                                return `${dsLabel}: Vol ${point.x.toFixed(2)}%, Ret ${point.y.toFixed(2)}%`;
+                                return `${dsLabel}: ${t('chart.tooltip_vol')} ${point.x.toFixed(2)}%, ${t('chart.tooltip_ret')} ${point.y.toFixed(2)}%`;
                             }
                         }
                     }
@@ -571,7 +571,7 @@ window.addEventListener('load', function() {
                     x: {
                         title: {
                             display: true,
-                            text: 'Volatilidad Anual (%)',
+                            text: t('chart.x_axis'),
                             color: '#9ca3af'
                         },
                         ticks: { color: '#9ca3af' },
@@ -580,7 +580,7 @@ window.addEventListener('load', function() {
                     y: {
                         title: {
                             display: true,
-                            text: 'Retorno Esperado Anual (%)',
+                            text: t('chart.y_axis'),
                             color: '#9ca3af'
                         },
                         ticks: { color: '#9ca3af' },
@@ -594,6 +594,39 @@ window.addEventListener('load', function() {
     } catch (mcError) {
         console.error('Error al crear gráfico Monte Carlo:', mcError);
     }
+
+    // Listen for language changes and rebuild charts
+    document.addEventListener('langchange', function() {
+        if (frontierChart) {
+            // Update frontier chart labels
+            frontierChart.data.datasets[0].label = t('chart.cml');
+            frontierChart.data.datasets[1].label = t('chart.efficient_frontier');
+            frontierChart.data.datasets[2].label = t('chart.individual_assets');
+            frontierChart.data.datasets[3].label = t('chart.risk_free_rate');
+            frontierChart.data.datasets[4].label = t('chart.optimal_portfolio');
+            frontierChart.data.datasets[5].label = t('chart.mixed_portfolio');
+            frontierChart.options.scales.x.title.text = t('chart.x_axis');
+            frontierChart.options.scales.y.title.text = t('chart.y_axis');
+            // Update legend filter for new label
+            frontierChart.options.plugins.legend.labels.filter = function(item) {
+                if (item.text === t('chart.mixed_portfolio') && frontierChart.data.datasets[5].data.length === 0) {
+                    return false;
+                }
+                return true;
+            };
+            frontierChart.update('none');
+        }
+        if (monteCarloChart) {
+            // Update monte carlo chart labels
+            monteCarloChart.data.datasets[0].label = t('chart.simulated_portfolios');
+            monteCarloChart.data.datasets[1].label = t('chart.optimal_slsqp');
+            monteCarloChart.data.datasets[2].label = t('chart.best_sharpe_mc');
+            monteCarloChart.data.datasets[3].label = t('chart.min_vol_mc');
+            monteCarloChart.options.scales.x.title.text = t('chart.x_axis');
+            monteCarloChart.options.scales.y.title.text = t('chart.y_axis');
+            monteCarloChart.update('none');
+        }
+    });
 });
 </script>
 {% endblock %}
