@@ -211,7 +211,7 @@ function createTickerChip(ticker) {
     removeBtn.className = "ticker-chip-remove";
     removeBtn.type = "button";
     removeBtn.innerHTML = "&times;";
-    removeBtn.setAttribute("aria-label", `Remover ${ticker}`);
+    removeBtn.setAttribute("aria-label", `${t('validation.remove_ticker')} ${ticker}`);
 
     chip.appendChild(tickerText);
     chip.appendChild(removeBtn);
@@ -260,19 +260,19 @@ function renderQuickSuggestions() {
  */
 function validateTickerFormat(ticker) {
     if (!ticker || ticker.trim() === "") {
-        return { valid: false, error: "El ticker no puede estar vacío" };
+        return { valid: false, error: t('validation.empty_ticker') };
     }
 
     const cleaned = ticker.trim().toUpperCase();
 
     // Validar longitud (1-5 caracteres es común para tickers)
     if (cleaned.length < 1 || cleaned.length > 5) {
-        return { valid: false, error: "El ticker debe tener entre 1 y 5 caracteres" };
+        return { valid: false, error: t('validation.ticker_length') };
     }
 
     // Validar que solo contenga letras, números y opcionalmente punto o guión
     if (!/^[A-Z0-9.\-]+$/.test(cleaned)) {
-        return { valid: false, error: "El ticker solo puede contener letras, números, puntos o guiones" };
+        return { valid: false, error: t('validation.ticker_format') };
     }
 
     return { valid: true, ticker: cleaned };
@@ -307,19 +307,19 @@ function updateTickerCounter(count) {
     if (count < 5) {
         counterEl.classList.add("counter-danger");
         validationEl.classList.add("text-danger");
-        validationEl.textContent = "⚠ Mínimo 5 tickers requeridos";
+        validationEl.textContent = `⚠ ${t('validation.min_required')}`;
     } else if (count >= 5 && count <= 7) {
         counterEl.classList.add("counter-warning");
         validationEl.classList.add("text-warning");
-        validationEl.textContent = "✓ Mínimo alcanzado";
+        validationEl.textContent = `✓ ${t('validation.min_reached')}`;
     } else if (count >= 8 && count <= 18) {
         counterEl.classList.add("counter-optimal");
         validationEl.classList.add("text-success");
-        validationEl.textContent = "✓ Diversificación óptima";
+        validationEl.textContent = `✓ ${t('validation.optimal_diversification')}`;
     } else if (count === 19 || count === 20) {
         counterEl.classList.add("counter-warning");
         validationEl.classList.add("text-warning");
-        validationEl.textContent = count === 20 ? "⚠ Máximo alcanzado" : "⚠ Casi lleno";
+        validationEl.textContent = count === 20 ? `⚠ ${t('validation.max_reached')}` : `⚠ ${t('validation.almost_full')}`;
     }
 
     // Deshabilitar input si se alcanzó el máximo
@@ -327,9 +327,9 @@ function updateTickerCounter(count) {
     if (searchInput) {
         searchInput.disabled = count >= 20;
         if (count >= 20) {
-            searchInput.placeholder = "Máximo de 20 tickers alcanzado";
+            searchInput.placeholder = t('validation.max_placeholder');
         } else {
-            searchInput.placeholder = "Escribe un ticker (ej: AAPL) y presiona Enter...";
+            searchInput.placeholder = t('validation.input_placeholder');
         }
     }
 }
@@ -456,6 +456,11 @@ class TickerSelector {
                 this.hideSearchResults();
             }
         });
+
+        // Listen for language changes to re-render dynamic text
+        document.addEventListener("langchange", () => {
+            this.updateUI();
+        });
     }
 
     showSearchResults(query) {
@@ -464,7 +469,7 @@ class TickerSelector {
         this.selectedIndex = -1;
 
         if (results.length === 0) {
-            this.resultsDropdown.innerHTML = '<div class="search-result-empty">No se encontraron resultados</div>';
+            this.resultsDropdown.innerHTML = `<div class="search-result-empty">${t('validation.no_results')}</div>`;
             this.resultsDropdown.style.display = "block";
             return;
         }
@@ -525,13 +530,13 @@ class TickerSelector {
 
         // Verificar si ya está agregado
         if (this.selectedTickers.includes(normalizedTicker)) {
-            this.showError(`${normalizedTicker} ya está en la lista`);
+            this.showError(`${normalizedTicker} ${t('validation.already_in_list')}`);
             return;
         }
 
         // Verificar límite máximo
         if (this.selectedTickers.length >= 20) {
-            this.showError("Máximo 20 tickers permitidos");
+            this.showError(t('validation.max_allowed'));
             return;
         }
 
@@ -603,9 +608,6 @@ class TickerSelector {
         const validationEl = document.getElementById("ticker-validation");
         if (!validationEl) return;
 
-        // Guardar mensaje anterior
-        const previousMessage = validationEl.textContent;
-
         // Mostrar error temporalmente
         validationEl.textContent = `⚠ ${message}`;
         validationEl.classList.add("text-danger");
@@ -615,6 +617,22 @@ class TickerSelector {
             updateTickerCounter(this.selectedTickers.length);
         }, 3000);
     }
+}
+
+// Translate known backend error messages
+function translateErrorAlerts() {
+    const errorAlerts = document.querySelectorAll("[data-error-msg]");
+    errorAlerts.forEach((el) => {
+        const msg = el.getAttribute("data-error-msg");
+        // Map known Spanish error messages to i18n keys
+        const ERROR_MAP = {
+            "Debes ingresar entre 5 y 20 tickers.": "error.ticker_range",
+        };
+        const key = ERROR_MAP[msg];
+        if (key) {
+            el.textContent = t(key);
+        }
+    });
 }
 
 // Inicialización cuando el DOM está listo
@@ -631,12 +649,20 @@ document.addEventListener("DOMContentLoaded", () => {
             const tickers = tickerSelector.selectedTickers;
             if (tickers.length < 5 || tickers.length > 20) {
                 e.preventDefault();
-                alert("Debes seleccionar entre 5 y 20 tickers.");
+                alert(t('validation.select_range'));
                 return;
             }
             spinner?.classList.remove("d-none");
         });
     }
+
+    // Translate any error alerts on the page
+    translateErrorAlerts();
+
+    // Re-translate error alerts on language change
+    document.addEventListener("langchange", () => {
+        translateErrorAlerts();
+    });
 
     // Scroll suave solo para enlaces que apuntan a anclas en la misma página
     document.querySelectorAll('a[href^="#"]').forEach((anchor) => {

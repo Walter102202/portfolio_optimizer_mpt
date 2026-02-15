@@ -219,6 +219,14 @@ textarea#tickers {
     justify-content: center;
 }
 
+html[lang="es"] .ticker-chips-container:empty::before {
+    content: "Sin tickers seleccionados";
+}
+
+html[lang="en"] .ticker-chips-container:empty::before {
+    content: "No tickers selected";
+}
+
 .ticker-chips-container:empty::before {
     content: "Sin tickers seleccionados";
     color: var(--text-muted);
@@ -470,6 +478,36 @@ textarea#tickers {
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+/* ===== Language Toggle ===== */
+.lang-toggle {
+    display: flex;
+    border: 1px solid rgba(46, 155, 255, 0.35);
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.lang-toggle-btn {
+    background: transparent;
+    border: none;
+    color: #a9b8cc;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.3rem 0.65rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    letter-spacing: 0.05em;
+}
+
+.lang-toggle-btn:hover {
+    color: #fff;
+    background: rgba(46, 155, 255, 0.15);
+}
+
+.lang-toggle-btn.active {
+    background: linear-gradient(120deg, #2e9bff, #1f6fd1);
+    color: #fff;
 }
 
 /* Responsive */

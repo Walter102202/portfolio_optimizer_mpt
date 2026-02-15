@@ -6,24 +6,24 @@
     <div class="container">
         <div class="row align-items-center gy-4">
             <div class="col-lg-6">
-                <div class="eyebrow mb-3">Inversión cuantitativa</div>
-                <h1 class="display-6 fw-bold text-gradient mb-3">Optimiza tu portafolio con el enfoque de Markowitz</h1>
-                <p class="lead text-light opacity-85 mb-4">Analiza hasta 20 acciones, descarga datos históricos y obtén la asignación con mejor ratio de Sharpe en minutos.</p>
+                <div class="eyebrow mb-3" data-i18n="hero.eyebrow">Inversión cuantitativa</div>
+                <h1 class="display-6 fw-bold text-gradient mb-3" data-i18n="hero.title">Optimiza tu portafolio con el enfoque de Markowitz</h1>
+                <p class="lead text-light opacity-85 mb-4" data-i18n="hero.subtitle">Analiza hasta 20 acciones, descarga datos históricos y obtén la asignación con mejor ratio de Sharpe en minutos.</p>
                 <div class="d-flex flex-wrap gap-3">
-                    <div class="pill">Datos Yahoo Finance</div>
-                    <div class="pill">Restricción sin cortos</div>
-                    <div class="pill">Sharpe Máximo</div>
+                    <div class="pill" data-i18n="hero.pill_data">Datos Yahoo Finance</div>
+                    <div class="pill" data-i18n="hero.pill_long_only">Restricción sin cortos</div>
+                    <div class="pill" data-i18n="hero.pill_sharpe">Sharpe Máximo</div>
                 </div>
             </div>
             <div class="col-lg-6">
                 <div class="form-card shadow-lg" id="formulario">
                     <div class="d-flex align-items-center mb-3">
-                        <div class="badge-soft text-primary bg-primary-subtle me-2">Simulación</div>
-                        <span class="text-muted small">3 pasos para tu cartera óptima</span>
+                        <div class="badge-soft text-primary bg-primary-subtle me-2" data-i18n="form.badge">Simulación</div>
+                        <span class="text-muted small" data-i18n="form.steps">3 pasos para tu cartera óptima</span>
                     </div>
                     <form id="portfolio-form" method="POST" novalidate>
                         <div class="mb-3">
-                            <label for="ticker-search" class="form-label text-light">Selecciona tus acciones</label>
+                            <label for="ticker-search" class="form-label text-light" data-i18n="form.label_stocks">Selecciona tus acciones</label>
 
                             <!-- Área de chips seleccionados -->
                             <div id="selected-tickers" class="ticker-chips-container mb-2"></div>
@@ -35,6 +35,7 @@
                                     id="ticker-search"
                                     class="form-control form-control-lg"
                                     placeholder="Busca por ticker o nombre (ej: Apple, MSFT)..."
+                                    data-i18n-placeholder="form.placeholder_search"
                                     autocomplete="off"
                                 />
                                 <!-- Dropdown de resultados -->
@@ -47,33 +48,33 @@
                             <!-- Contador y validación -->
                             <div class="d-flex justify-content-between align-items-center mt-2">
                                 <div class="form-text text-muted">
-                                    <span id="ticker-counter">0</span> de 5-20 tickers seleccionados
+                                    <span id="ticker-counter">0</span> <span data-i18n="form.counter_suffix">de 5-20 tickers seleccionados</span>
                                 </div>
                                 <div id="ticker-validation" class="form-text"></div>
                             </div>
 
                             <!-- Sugerencias rápidas -->
                             <div class="mt-3">
-                                <div class="form-text text-muted mb-2">Acciones populares:</div>
+                                <div class="form-text text-muted mb-2" data-i18n="form.popular_stocks">Acciones populares:</div>
                                 <div id="quick-suggestions" class="d-flex flex-wrap gap-2"></div>
                             </div>
                         </div>
                         <div class="row g-3">
                             <div class="col-12">
-                                <label for="period" class="form-label text-light">Periodo histórico</label>
+                                <label for="period" class="form-label text-light" data-i18n="form.label_period">Periodo histórico</label>
                                 <select class="form-select form-select-lg" id="period" name="period">
                                     {% set periods = ["1y", "3y", "5y", "10y", "max"] %}
                                     {% for p in periods %}
                                         <option value="{{ p }}" {% if p == period %}selected{% endif %}>{{ p }}</option>
                                     {% endfor %}
                                 </select>
-                                <div class="form-text text-muted">Resultados anualizados (horizonte 1 año)</div>
+                                <div class="form-text text-muted" data-i18n="form.period_help">Resultados anualizados (horizonte 1 año)</div>
                             </div>
                         </div>
                         <div class="d-flex align-items-center mt-4">
-                            <button class="btn btn-primary btn-lg me-3" type="submit">Calcular cartera óptima</button>
+                            <button class="btn btn-primary btn-lg me-3" type="submit" data-i18n="form.submit">Calcular cartera óptima</button>
                             <div id="spinner" class="spinner-border text-primary d-none" role="status">
-                                <span class="visually-hidden">Calculando...</span>
+                                <span class="visually-hidden" data-i18n="form.calculating">Calculando...</span>
                             </div>
                         </div>
                     </form>
@@ -87,29 +88,29 @@
 {% block content %}
 <section class="py-5" id="como-funciona">
     <div class="text-center mb-5">
-        <div class="eyebrow mb-2">Proceso de optimización</div>
-        <h2 class="display-6 fw-bold text-gradient">Cómo funciona</h2>
+        <div class="eyebrow mb-2" data-i18n="how.eyebrow">Proceso de optimización</div>
+        <h2 class="display-6 fw-bold text-gradient" data-i18n="how.title">Cómo funciona</h2>
     </div>
     <div class="row g-4">
         <div class="col-lg-4">
             <div class="info-card h-100">
                 <div class="icon-circle mb-3">1</div>
-                <h3 class="h5 text-light">Define el universo</h3>
-                <p class="text-muted mb-0">Ingresa entre 5 y 20 acciones que quieras evaluar. Podemos mezclar distintos sectores y mercados.</p>
+                <h3 class="h5 text-light" data-i18n="how.step1_title">Define el universo</h3>
+                <p class="text-muted mb-0" data-i18n="how.step1_desc">Ingresa entre 5 y 20 acciones que quieras evaluar. Podemos mezclar distintos sectores y mercados.</p>
             </div>
         </div>
         <div class="col-lg-4">
             <div class="info-card h-100">
                 <div class="icon-circle mb-3">2</div>
-                <h3 class="h5 text-light">Procesamos los datos</h3>
-                <p class="text-muted mb-0">Descargamos precios ajustados, calculamos retornos, medias y covarianzas diarias en segundos.</p>
+                <h3 class="h5 text-light" data-i18n="how.step2_title">Procesamos los datos</h3>
+                <p class="text-muted mb-0" data-i18n="how.step2_desc">Descargamos precios ajustados, calculamos retornos, medias y covarianzas diarias en segundos.</p>
             </div>
         </div>
         <div class="col-lg-4">
             <div class="info-card h-100">
                 <div class="icon-circle mb-3">3</div>
-                <h3 class="h5 text-light">Entregamos el óptimo</h3>
-                <p class="text-muted mb-0">Resolvemos el problema de Markowitz maximizando Sharpe sin ventas cortas y te mostramos los pesos finales.</p>
+                <h3 class="h5 text-light" data-i18n="how.step3_title">Entregamos el óptimo</h3>
+                <p class="text-muted mb-0" data-i18n="how.step3_desc">Resolvemos el problema de Markowitz maximizando Sharpe sin ventas cortas y te mostramos los pesos finales.</p>
             </div>
         </div>
     </div>
@@ -117,30 +118,30 @@
 
 <section class="py-5" id="metricas">
     <div class="text-center mb-5">
-        <div class="eyebrow mb-2">Fundamentos matemáticos</div>
-        <h2 class="display-6 fw-bold text-gradient">Métricas utilizadas</h2>
-        <p class="text-muted mt-3">Utilizamos la tasa libre de riesgo del bono del Tesoro de EE.UU. a 10 años (Federal Reserve Bank of New York) · Valor actual: {{ risk_free_rate|pct(2) }}</p>
+        <div class="eyebrow mb-2" data-i18n="metrics.eyebrow">Fundamentos matemáticos</div>
+        <h2 class="display-6 fw-bold text-gradient" data-i18n="metrics.title">Métricas utilizadas</h2>
+        <p class="text-muted mt-3"><span data-i18n="metrics.rf_desc">Utilizamos la tasa libre de riesgo del bono del Tesoro de EE.UU. a 10 años (Federal Reserve Bank of New York) · Valor actual:</span> {{ risk_free_rate|pct(2) }}</p>
     </div>
     <div class="row g-4">
         <div class="col-lg-4">
             <div class="metric-card">
-                <p class="text-muted small mb-1">Riesgo controlado</p>
-                <h3 class="text-light mb-1">Matriz de covarianzas</h3>
-                <p class="text-muted mb-0">Usamos varianzas y covarianzas recientes para equilibrar la volatilidad de la cartera.</p>
+                <p class="text-muted small mb-1" data-i18n="metrics.risk_label">Riesgo controlado</p>
+                <h3 class="text-light mb-1" data-i18n="metrics.risk_title">Matriz de covarianzas</h3>
+                <p class="text-muted mb-0" data-i18n="metrics.risk_desc">Usamos varianzas y covarianzas recientes para equilibrar la volatilidad de la cartera.</p>
             </div>
         </div>
         <div class="col-lg-4">
             <div class="metric-card">
-                <p class="text-muted small mb-1">Rentabilidad esperada</p>
-                <h3 class="text-light mb-1">Media de retornos</h3>
-                <p class="text-muted mb-0">Estimamos los retornos promedio del periodo seleccionado para guiar la asignación.</p>
+                <p class="text-muted small mb-1" data-i18n="metrics.return_label">Rentabilidad esperada</p>
+                <h3 class="text-light mb-1" data-i18n="metrics.return_title">Media de retornos</h3>
+                <p class="text-muted mb-0" data-i18n="metrics.return_desc">Estimamos los retornos promedio del periodo seleccionado para guiar la asignación.</p>
             </div>
         </div>
         <div class="col-lg-4">
             <div class="metric-card">
-                <p class="text-muted small mb-1">Maximizando eficiencia</p>
-                <h3 class="text-light mb-1">Sharpe objetivo</h3>
-                <p class="text-muted mb-0">Optimización con SLSQP, pesos en [0,1] y suma 1 para evitar ventas cortas.</p>
+                <p class="text-muted small mb-1" data-i18n="metrics.efficiency_label">Maximizando eficiencia</p>
+                <h3 class="text-light mb-1" data-i18n="metrics.efficiency_title">Sharpe objetivo</h3>
+                <p class="text-muted mb-0" data-i18n="metrics.efficiency_desc">Optimización con SLSQP, pesos en [0,1] y suma 1 para evitar ventas cortas.</p>
             </div>
         </div>
     </div>
