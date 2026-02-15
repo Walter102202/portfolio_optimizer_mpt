@@ -1,6 +1,6 @@
 """
-Simulación Monte Carlo para portafolios.
-Genera portafolios aleatorios para visualizar la nube de riesgo-retorno.
+Simulación de portafolios aleatorios.
+Genera portafolios con pesos aleatorios para visualizar la nube de riesgo-retorno.
 """
 import numpy as np
 

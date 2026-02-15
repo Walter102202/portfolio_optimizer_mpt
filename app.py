@@ -66,7 +66,7 @@ def create_app():
                 opt = optimize_portfolio(prices, risk_free_rate=risk_free_rate, expected_returns_annual=expected_returns)
                 frontier = compute_efficient_frontier(prices, n_points=30, risk_free_rate=risk_free_rate, expected_returns_annual=expected_returns)
 
-                # Simulación Monte Carlo
+                # Simulación de portafolios aleatorios
                 mc = run_monte_carlo(prices, n_portfolios=5000, risk_free_rate=risk_free_rate, expected_returns_annual=expected_returns)
 
                 rows = []

@@ -124,10 +124,10 @@ const TRANSLATIONS = {
     "result.expected_return_label": { es: "Retorno Esperado:", en: "Expected Return:" },
     "result.volatility_label": { es: "Volatilidad:", en: "Volatility:" },
 
-    // Monte Carlo
-    "result.monte_carlo_title": { es: "Simulación Monte Carlo", en: "Monte Carlo Simulation" },
+    // Simulación de portafolios aleatorios
+    "result.monte_carlo_title": { es: "Simulación de portafolios aleatorios", en: "Random portfolio simulation" },
     "result.mc_portfolios_generated": { es: "portafolios aleatorios generados", en: "random portfolios generated" },
-    "result.mc_badge": { es: "Monte Carlo", en: "Monte Carlo" },
+    "result.mc_badge": { es: "Simulación", en: "Simulation" },
     "result.mc_best_sharpe": { es: "Mejor Sharpe (simulado)", en: "Best Sharpe (simulated)" },
     "result.mc_min_vol": { es: "Mínima Volatilidad (simulada)", en: "Minimum Volatility (simulated)" },
     "result.mc_return": { es: "Retorno:", en: "Return:" },
@@ -145,8 +145,8 @@ const TRANSLATIONS = {
     "chart.y_axis": { es: "Retorno Esperado Anual (%)", en: "Expected Annual Return (%)" },
     "chart.simulated_portfolios": { es: "Portafolios simulados", en: "Simulated portfolios" },
     "chart.optimal_slsqp": { es: "Portafolio Óptimo (SLSQP)", en: "Optimal Portfolio (SLSQP)" },
-    "chart.best_sharpe_mc": { es: "Mejor Sharpe (MC)", en: "Best Sharpe (MC)" },
-    "chart.min_vol_mc": { es: "Mínima Volatilidad (MC)", en: "Minimum Volatility (MC)" },
+    "chart.best_sharpe_mc": { es: "Mejor Sharpe (simulado)", en: "Best Sharpe (simulated)" },
+    "chart.min_vol_mc": { es: "Mínima Volatilidad (simulada)", en: "Minimum Volatility (simulated)" },
 
     // Chart Tooltips
     "chart.tooltip_rf": { es: "Rf:", en: "Rf:" },
