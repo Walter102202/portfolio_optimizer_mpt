@@ -8,7 +8,7 @@
             <div class="col-lg-6">
                 <div class="eyebrow mb-3" data-i18n="hero.eyebrow">Inversión cuantitativa</div>
                 <h1 class="display-6 fw-bold text-gradient mb-3" data-i18n="hero.title">Optimiza tu portafolio con el enfoque de Markowitz</h1>
-                <p class="lead text-light opacity-85 mb-4" data-i18n="hero.subtitle">Analiza hasta 20 acciones, descarga datos históricos y obtén la asignación con mejor ratio de Sharpe en minutos.</p>
+                <p class="lead text-light opacity-85 mb-4" data-i18n="hero.subtitle">Analiza hasta 30 acciones, descarga datos históricos y obtén la asignación con mejor ratio de Sharpe en minutos.</p>
                 <div class="d-flex flex-wrap gap-3">
                     <div class="pill" data-i18n="hero.pill_data">Datos Yahoo Finance</div>
                     <div class="pill" data-i18n="hero.pill_long_only">Restricción sin cortos</div>
@@ -48,7 +48,7 @@
                             <!-- Contador y validación -->
                             <div class="d-flex justify-content-between align-items-center mt-2">
                                 <div class="form-text text-muted">
-                                    <span id="ticker-counter">0</span> <span data-i18n="form.counter_suffix">de 5-20 tickers seleccionados</span>
+                                    <span id="ticker-counter">0</span> <span data-i18n="form.counter_suffix">de 5-30 tickers seleccionados</span>
                                 </div>
                                 <div id="ticker-validation" class="form-text"></div>
                             </div>
@@ -59,6 +59,26 @@
                                 <div id="quick-suggestions" class="d-flex flex-wrap gap-2"></div>
                             </div>
                         </div>
+
+                        <!-- Optimizar por índice -->
+                        <div class="mb-3">
+                            <div class="form-text text-muted mb-2" data-i18n="form.optimize_by_index">Optimizar por índice:</div>
+                            <div id="index-buttons" class="d-flex flex-wrap gap-2">
+                                <button type="button" class="index-btn" data-index="IPSA">
+                                    <span class="index-btn-label">IPSA Chile</span>
+                                    <span class="index-btn-count" data-i18n="form.index_ipsa_count">30 acciones</span>
+                                </button>
+                                <button type="button" class="index-btn" data-index="SP500">
+                                    <span class="index-btn-label">S&P 500</span>
+                                    <span class="index-btn-count">Top 20</span>
+                                </button>
+                                <button type="button" class="index-btn" data-index="NASDAQ">
+                                    <span class="index-btn-label">NASDAQ</span>
+                                    <span class="index-btn-count">Top 20</span>
+                                </button>
+                            </div>
+                        </div>
+
                         <div class="row g-3">
                             <div class="col-12">
                                 <label for="period" class="form-label text-light" data-i18n="form.label_period">Periodo histórico</label>
@@ -96,7 +116,7 @@
             <div class="info-card h-100">
                 <div class="icon-circle mb-3">1</div>
                 <h3 class="h5 text-light" data-i18n="how.step1_title">Define el universo</h3>
-                <p class="text-muted mb-0" data-i18n="how.step1_desc">Ingresa entre 5 y 20 acciones que quieras evaluar. Podemos mezclar distintos sectores y mercados.</p>
+                <p class="text-muted mb-0" data-i18n="how.step1_desc">Ingresa entre 5 y 30 acciones que quieras evaluar. Podemos mezclar distintos sectores y mercados.</p>
             </div>
         </div>
         <div class="col-lg-4">

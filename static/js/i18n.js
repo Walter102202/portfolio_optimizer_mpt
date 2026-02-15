@@ -19,8 +19,8 @@ const TRANSLATIONS = {
         en: "Optimize your portfolio with the Markowitz approach"
     },
     "hero.subtitle": {
-        es: "Analiza hasta 20 acciones, descarga datos históricos y obtén la asignación con mejor ratio de Sharpe en minutos.",
-        en: "Analyze up to 20 stocks, download historical data and get the best Sharpe ratio allocation in minutes."
+        es: "Analiza hasta 30 acciones, descarga datos históricos y obtén la asignación con mejor ratio de Sharpe en minutos.",
+        en: "Analyze up to 30 stocks, download historical data and get the best Sharpe ratio allocation in minutes."
     },
     "hero.pill_data": { es: "Datos Yahoo Finance", en: "Yahoo Finance Data" },
     "hero.pill_long_only": { es: "Restricción sin cortos", en: "Long-only constraint" },
@@ -34,8 +34,10 @@ const TRANSLATIONS = {
         es: "Busca por ticker o nombre (ej: Apple, MSFT)...",
         en: "Search by ticker or name (e.g. Apple, MSFT)..."
     },
-    "form.counter_suffix": { es: "de 5-20 tickers seleccionados", en: "of 5-20 tickers selected" },
+    "form.counter_suffix": { es: "de 5-30 tickers seleccionados", en: "of 5-30 tickers selected" },
     "form.popular_stocks": { es: "Acciones populares:", en: "Popular stocks:" },
+    "form.optimize_by_index": { es: "Optimizar por índice:", en: "Optimize by index:" },
+    "form.index_ipsa_count": { es: "30 acciones", en: "30 stocks" },
     "form.label_period": { es: "Periodo histórico", en: "Historical period" },
     "form.period_help": { es: "Resultados anualizados (horizonte 1 año)", en: "Annualized results (1 year horizon)" },
     "form.submit": { es: "Calcular cartera óptima", en: "Calculate optimal portfolio" },
@@ -46,8 +48,8 @@ const TRANSLATIONS = {
     "how.title": { es: "Cómo funciona", en: "How it works" },
     "how.step1_title": { es: "Define el universo", en: "Define the universe" },
     "how.step1_desc": {
-        es: "Ingresa entre 5 y 20 acciones que quieras evaluar. Podemos mezclar distintos sectores y mercados.",
-        en: "Enter between 5 and 20 stocks you want to evaluate. You can mix different sectors and markets."
+        es: "Ingresa entre 5 y 30 acciones que quieras evaluar. Podemos mezclar distintos sectores y mercados.",
+        en: "Enter between 5 and 30 stocks you want to evaluate. You can mix different sectors and markets."
     },
     "how.step2_title": { es: "Procesamos los datos", en: "We process the data" },
     "how.step2_desc": {
@@ -157,12 +159,12 @@ const TRANSLATIONS = {
     // ===== Validation Messages (main.js) =====
     "validation.empty_ticker": { es: "El ticker no puede estar vacío", en: "Ticker cannot be empty" },
     "validation.ticker_length": {
-        es: "El ticker debe tener entre 1 y 5 caracteres",
-        en: "Ticker must be between 1 and 5 characters"
+        es: "El ticker debe tener entre 1 y 15 caracteres",
+        en: "Ticker must be between 1 and 15 characters"
     },
     "validation.ticker_format": {
-        es: "El ticker solo puede contener letras, números, puntos o guiones",
-        en: "Ticker can only contain letters, numbers, periods or hyphens"
+        es: "El ticker solo puede contener letras, números, puntos, guiones o guiones bajos",
+        en: "Ticker can only contain letters, numbers, periods, hyphens or underscores"
     },
     "validation.min_required": { es: "Mínimo 5 tickers requeridos", en: "Minimum 5 tickers required" },
     "validation.min_reached": { es: "Mínimo alcanzado", en: "Minimum reached" },
@@ -170,8 +172,8 @@ const TRANSLATIONS = {
     "validation.max_reached": { es: "Máximo alcanzado", en: "Maximum reached" },
     "validation.almost_full": { es: "Casi lleno", en: "Almost full" },
     "validation.max_placeholder": {
-        es: "Máximo de 20 tickers alcanzado",
-        en: "Maximum of 20 tickers reached"
+        es: "Máximo de 30 tickers alcanzado",
+        en: "Maximum of 30 tickers reached"
     },
     "validation.input_placeholder": {
         es: "Escribe un ticker (ej: AAPL) y presiona Enter...",
@@ -179,10 +181,10 @@ const TRANSLATIONS = {
     },
     "validation.no_results": { es: "No se encontraron resultados", en: "No results found" },
     "validation.already_in_list": { es: "ya está en la lista", en: "is already in the list" },
-    "validation.max_allowed": { es: "Máximo 20 tickers permitidos", en: "Maximum 20 tickers allowed" },
+    "validation.max_allowed": { es: "Máximo 30 tickers permitidos", en: "Maximum 30 tickers allowed" },
     "validation.select_range": {
-        es: "Debes seleccionar entre 5 y 20 tickers.",
-        en: "You must select between 5 and 20 tickers."
+        es: "Debes seleccionar entre 5 y 30 tickers.",
+        en: "You must select between 5 and 30 tickers."
     },
     "validation.remove_ticker": { es: "Remover", en: "Remove" },
 
@@ -191,8 +193,8 @@ const TRANSLATIONS = {
 
     // ===== Error messages from backend =====
     "error.ticker_range": {
-        es: "Debes ingresar entre 5 y 20 tickers.",
-        en: "You must enter between 5 and 20 tickers."
+        es: "Debes ingresar entre 5 y 30 tickers.",
+        en: "You must enter between 5 and 30 tickers."
     },
 
     // ===== Chart.js loading errors =====
