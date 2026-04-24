@@ -6,75 +6,144 @@ import pandas as pd
 import yfinance as yf
 
 
+# Candidatos de índice de mercado por sufijo, en orden de preferencia.
+# Yahoo Finance no tiene histórico confiable para algunos índices locales
+# (p.ej. ^IPSA devuelve solo 1 fila); usamos ETFs proxy cuando es necesario.
 MARKET_INDEX_BY_SUFFIX = {
-    ".SN": "^IPSA",   # Chile - Bolsa de Santiago
-    ".MX": "^MXX",    # México - IPC
-    ".SA": "^BVSP",   # Brasil - Bovespa
-    ".BA": "^MERV",   # Argentina - Merval
-    ".L":  "^FTSE",   # Reino Unido
-    ".DE": "^GDAXI",  # Alemania - DAX
-    ".PA": "^FCHI",   # Francia - CAC 40
-    ".MI": "FTSEMIB.MI",  # Italia - FTSE MIB
-    ".MC": "^IBEX",   # España - IBEX 35
-    ".T":  "^N225",   # Japón - Nikkei
-    ".HK": "^HSI",    # Hong Kong - Hang Seng
-    ".TO": "^GSPTSE", # Canadá - TSX
-    ".AX": "^AXJO",   # Australia - ASX 200
+    ".SN": ["ECH"],                   # Chile: iShares MSCI Chile ETF (^IPSA solo tiene 1 fila en Yahoo)
+    ".MX": ["^MXX", "EWW"],           # México - IPC (fallback: iShares MSCI Mexico ETF)
+    ".SA": ["^BVSP", "EWZ"],          # Brasil - Bovespa (fallback: iShares MSCI Brazil ETF)
+    ".BA": ["^MERV", "ARGT"],         # Argentina - Merval (fallback: Global X MSCI Argentina ETF)
+    ".L":  ["^FTSE"],                 # Reino Unido - FTSE 100
+    ".DE": ["^GDAXI"],                # Alemania - DAX
+    ".PA": ["^FCHI"],                 # Francia - CAC 40
+    ".MI": ["FTSEMIB.MI"],            # Italia - FTSE MIB
+    ".MC": ["^IBEX"],                 # España - IBEX 35
+    ".T":  ["^N225"],                 # Japón - Nikkei
+    ".HK": ["^HSI"],                  # Hong Kong - Hang Seng
+    ".TO": ["^GSPTSE"],               # Canadá - TSX
+    ".AX": ["^AXJO"],                 # Australia - ASX 200
 }
+
+MIN_MARKET_ROWS = 30
 
 
 def infer_market_ticker(tickers):
     """
-    Infiere el índice de mercado apropiado según los sufijos de los tickers.
-    Si todos los tickers comparten un mismo sufijo conocido, retorna su índice local.
-    Si no, retorna el S&P 500 como fallback.
+    Retorna el primer candidato de índice de mercado según el sufijo común de los tickers.
+    Para lógica con fallback usar get_market_data() directamente.
     """
+    candidates = _market_candidates(tickers)
+    return candidates[0]
+
+
+def _market_candidates(tickers):
+    """Lista ordenada de tickers candidatos a usar como proxy de mercado."""
     if not tickers:
-        return "^GSPC"
+        return ["^GSPC"]
 
     suffixes = set()
     for t in tickers:
         if "." in t:
-            suffix = "." + t.rsplit(".", 1)[1]
-            suffixes.add(suffix)
+            suffixes.add("." + t.rsplit(".", 1)[1])
         else:
             suffixes.add("")
 
-    # Si todos comparten un sufijo conocido, usar su índice local
     if len(suffixes) == 1:
         only = next(iter(suffixes))
         if only in MARKET_INDEX_BY_SUFFIX:
-            return MARKET_INDEX_BY_SUFFIX[only]
+            return MARKET_INDEX_BY_SUFFIX[only] + ["^GSPC"]
 
-    # Si son acciones estadounidenses (sin sufijo o con .B/.A) -> S&P 500
-    return "^GSPC"
+    return ["^GSPC"]
 
 
-def get_market_data(period="5y", market_ticker="^GSPC"):
+def _extract_adj_close_series(market, market_ticker):
     """
-    Obtiene datos del índice de mercado indicado.
-    Retorna Series con precios ajustados del mercado.
+    Extrae 'Adj Close' como pd.Series desde el DataFrame que devuelve yf.download.
+    Maneja columnas planas y MultiIndex en cualquier orientación sin usar squeeze()
+    (que colapsa a escalar si el DataFrame es de shape (1,1)).
     """
-    try:
-        market = yf.download(market_ticker, period=period, interval="1d", progress=False, auto_adjust=False)
-
-        if market.empty:
-            raise ValueError("No se pudieron descargar datos del mercado (DataFrame vacío)")
-
-        # Extraer Adj Close (yfinance devuelve un DataFrame con columnas: Open, High, Low, Close, Adj Close, Volume)
+    if isinstance(market.columns, pd.MultiIndex):
+        level0 = market.columns.get_level_values(0)
+        level1 = market.columns.get_level_values(1)
+        if "Adj Close" in level0:
+            adj_close = market["Adj Close"]
+        elif "Adj Close" in level1:
+            adj_close = market.xs("Adj Close", level=1, axis=1)
+        elif "Close" in level0:
+            adj_close = market["Close"]
+        elif "Close" in level1:
+            adj_close = market.xs("Close", level=1, axis=1)
+        else:
+            raise ValueError(
+                f"No se encontró 'Adj Close' ni 'Close' para {market_ticker}. "
+                f"Columnas: {market.columns.tolist()}"
+            )
+    else:
         if "Adj Close" in market.columns:
             adj_close = market["Adj Close"]
-
-            # Si es un DataFrame de una columna, convertir a Series
-            if isinstance(adj_close, pd.DataFrame):
-                adj_close = adj_close.squeeze()
-
-            return adj_close
+        elif "Close" in market.columns:
+            adj_close = market["Close"]
         else:
-            raise ValueError(f"No se encontró columna 'Adj Close'. Columnas disponibles: {market.columns.tolist()}")
+            raise ValueError(
+                f"No se encontró 'Adj Close' ni 'Close' para {market_ticker}. "
+                f"Columnas: {market.columns.tolist()}"
+            )
 
-    except Exception as e:
-        raise ValueError(f"Error descargando datos del mercado ({market_ticker}): {e}")
+    if isinstance(adj_close, pd.DataFrame):
+        # Tomar primera columna como Series (evita squeeze que colapsa (1,1) a escalar)
+        adj_close = adj_close.iloc[:, 0]
+
+    if not isinstance(adj_close, pd.Series):
+        raise ValueError(
+            f"Tipo inesperado extrayendo precios de {market_ticker}: {type(adj_close).__name__}"
+        )
+
+    return adj_close.dropna()
+
+
+def get_market_data(period="5y", market_ticker="^GSPC", tickers=None):
+    """
+    Obtiene la serie de precios ajustados del índice de mercado.
+    Si se pasan `tickers`, prueba los candidatos del sufijo en orden y cae a ^GSPC
+    cuando el índice local no tiene histórico suficiente en Yahoo (p.ej. ^IPSA).
+    Si se pasa un `market_ticker` explícito, intenta sólo ese (con fallback a ^GSPC).
+    """
+    if tickers is not None:
+        candidates = _market_candidates(tickers)
+    else:
+        candidates = [market_ticker]
+        if market_ticker != "^GSPC":
+            candidates.append("^GSPC")
+
+    errors = []
+    for candidate in candidates:
+        try:
+            market = yf.download(
+                candidate, period=period, interval="1d",
+                progress=False, auto_adjust=False,
+            )
+            if market.empty:
+                errors.append(f"{candidate}: DataFrame vacío")
+                continue
+
+            series = _extract_adj_close_series(market, candidate)
+
+            if len(series) < MIN_MARKET_ROWS:
+                errors.append(f"{candidate}: solo {len(series)} filas (se requieren {MIN_MARKET_ROWS}+)")
+                continue
+
+            series.name = candidate
+            print(f"DEBUG CAPM - Usando índice de mercado: {candidate} ({len(series)} filas)")
+            return series
+        except Exception as e:  # noqa: BLE001
+            errors.append(f"{candidate}: {e}")
+            continue
+
+    raise ValueError(
+        "No se pudo obtener un índice de mercado con histórico suficiente. "
+        f"Intentos: {'; '.join(errors)}"
+    )
 
 
 def calculate_betas(price_df, market_prices):
@@ -173,17 +242,18 @@ def get_capm_expected_returns(price_df, risk_free_rate, period="5y"):
             - 'betas': Series con betas de cada acción
             - 'market_return': Retorno anualizado del mercado
     """
-    market_ticker = infer_market_ticker(list(price_df.columns))
+    tickers_list = list(price_df.columns)
 
     print("=" * 60)
     print("DEBUG CAPM - Iniciando cálculo de retornos esperados CAPM")
     print(f"DEBUG CAPM - Risk-free rate: {risk_free_rate:.4f} ({risk_free_rate*100:.2f}%)")
     print(f"DEBUG CAPM - Periodo: {period}")
-    print(f"DEBUG CAPM - Índice de mercado: {market_ticker}")
+    print(f"DEBUG CAPM - Candidatos de mercado: {_market_candidates(tickers_list)}")
     print("=" * 60)
 
-    # Obtener datos del mercado
-    market_prices = get_market_data(period=period, market_ticker=market_ticker)
+    # Obtener datos del mercado (con fallback automático por sufijo)
+    market_prices = get_market_data(period=period, tickers=tickers_list)
+    market_ticker = market_prices.name or "market"
 
     # Calcular retorno del mercado (promedio histórico anualizado)
     market_returns = market_prices.pct_change().dropna()
