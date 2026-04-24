@@ -31,7 +31,7 @@ const CHILEAN_STOCKS = [
     {t:"COLBUN.SN",n:"Colbún"},{t:"CAP.SN",n:"CAP"},
     {t:"AGUAS-A.SN",n:"Aguas Andinas"},{t:"ANDINA-B.SN",n:"Embotelladora Andina"},
     {t:"PARAUCO.SN",n:"Parque Arauco"},{t:"RIPLEY.SN",n:"Ripley"},
-    {t:"SECURITY.SN",n:"Grupo Security"},{t:"MALLPLAZA.SN",n:"Mallplaza"},
+    {t:"CONCHATORO.SN",n:"Viña Concha y Toro"},{t:"MALLPLAZA.SN",n:"Mallplaza"},
     {t:"HABITAT.SN",n:"AFP Habitat"},{t:"SONDA.SN",n:"Sonda"},
     {t:"ECL.SN",n:"Engie Energia Chile"},{t:"ORO-BLANCO.SN",n:"Oro Blanco"},
     {t:"IAM.SN",n:"Inversiones Aguas Metropolitanas"},{t:"SMSAAM.SN",n:"SM SAAM"}
