@@ -6,13 +6,57 @@ import pandas as pd
 import yfinance as yf
 
 
-def get_market_data(period="5y"):
+MARKET_INDEX_BY_SUFFIX = {
+    ".SN": "^IPSA",   # Chile - Bolsa de Santiago
+    ".MX": "^MXX",    # México - IPC
+    ".SA": "^BVSP",   # Brasil - Bovespa
+    ".BA": "^MERV",   # Argentina - Merval
+    ".L":  "^FTSE",   # Reino Unido
+    ".DE": "^GDAXI",  # Alemania - DAX
+    ".PA": "^FCHI",   # Francia - CAC 40
+    ".MI": "FTSEMIB.MI",  # Italia - FTSE MIB
+    ".MC": "^IBEX",   # España - IBEX 35
+    ".T":  "^N225",   # Japón - Nikkei
+    ".HK": "^HSI",    # Hong Kong - Hang Seng
+    ".TO": "^GSPTSE", # Canadá - TSX
+    ".AX": "^AXJO",   # Australia - ASX 200
+}
+
+
+def infer_market_ticker(tickers):
     """
-    Obtiene datos del índice de mercado (S&P 500).
+    Infiere el índice de mercado apropiado según los sufijos de los tickers.
+    Si todos los tickers comparten un mismo sufijo conocido, retorna su índice local.
+    Si no, retorna el S&P 500 como fallback.
+    """
+    if not tickers:
+        return "^GSPC"
+
+    suffixes = set()
+    for t in tickers:
+        if "." in t:
+            suffix = "." + t.rsplit(".", 1)[1]
+            suffixes.add(suffix)
+        else:
+            suffixes.add("")
+
+    # Si todos comparten un sufijo conocido, usar su índice local
+    if len(suffixes) == 1:
+        only = next(iter(suffixes))
+        if only in MARKET_INDEX_BY_SUFFIX:
+            return MARKET_INDEX_BY_SUFFIX[only]
+
+    # Si son acciones estadounidenses (sin sufijo o con .B/.A) -> S&P 500
+    return "^GSPC"
+
+
+def get_market_data(period="5y", market_ticker="^GSPC"):
+    """
+    Obtiene datos del índice de mercado indicado.
     Retorna Series con precios ajustados del mercado.
     """
     try:
-        market = yf.download("^GSPC", period=period, interval="1d", progress=False, auto_adjust=False)
+        market = yf.download(market_ticker, period=period, interval="1d", progress=False, auto_adjust=False)
 
         if market.empty:
             raise ValueError("No se pudieron descargar datos del mercado (DataFrame vacío)")
@@ -30,7 +74,7 @@ def get_market_data(period="5y"):
             raise ValueError(f"No se encontró columna 'Adj Close'. Columnas disponibles: {market.columns.tolist()}")
 
     except Exception as e:
-        raise ValueError(f"Error descargando datos del mercado: {e}")
+        raise ValueError(f"Error descargando datos del mercado ({market_ticker}): {e}")
 
 
 def calculate_betas(price_df, market_prices):
@@ -129,14 +173,17 @@ def get_capm_expected_returns(price_df, risk_free_rate, period="5y"):
             - 'betas': Series con betas de cada acción
             - 'market_return': Retorno anualizado del mercado
     """
+    market_ticker = infer_market_ticker(list(price_df.columns))
+
     print("=" * 60)
     print("DEBUG CAPM - Iniciando cálculo de retornos esperados CAPM")
     print(f"DEBUG CAPM - Risk-free rate: {risk_free_rate:.4f} ({risk_free_rate*100:.2f}%)")
     print(f"DEBUG CAPM - Periodo: {period}")
+    print(f"DEBUG CAPM - Índice de mercado: {market_ticker}")
     print("=" * 60)
 
     # Obtener datos del mercado
-    market_prices = get_market_data(period=period)
+    market_prices = get_market_data(period=period, market_ticker=market_ticker)
 
     # Calcular retorno del mercado (promedio histórico anualizado)
     market_returns = market_prices.pct_change().dropna()
@@ -151,7 +198,7 @@ def get_capm_expected_returns(price_df, risk_free_rate, period="5y"):
     else:
         market_return_annual = float(market_return_annual)
 
-    print(f"DEBUG CAPM - Retorno anual del mercado (S&P 500): {market_return_annual:.4f} ({market_return_annual*100:.2f}%)")
+    print(f"DEBUG CAPM - Retorno anual del mercado ({market_ticker}): {market_return_annual:.4f} ({market_return_annual*100:.2f}%)")
 
     # Calcular betas
     betas = calculate_betas(price_df, market_prices)

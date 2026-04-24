@@ -52,6 +52,21 @@ def get_price_data(tickers, period="5y"):
         else:
             raise ValueError(f"No se encontró 'Adj Close'. Columnas disponibles: {data.columns.tolist()}")
 
+    # Detectar tickers que Yahoo no devolvió o que vinieron totalmente vacíos
+    missing = [t for t in tickers if t not in data.columns or data[t].isna().all()]
+    if missing:
+        hint = ""
+        if any(not m.endswith(".SN") for m in missing):
+            hint = (
+                " Si son acciones chilenas (IPSA), agrega el sufijo .SN "
+                "(ej: COPEC.SN, FALABELLA.SN, CENCOSUD.SN)."
+            )
+        raise ValueError(
+            f"Yahoo Finance no devolvió datos para: {', '.join(missing)}.{hint}"
+        )
+
+    # Descartar columnas totalmente vacías y luego filas con NaN en el resto
+    data = data.dropna(axis=1, how="all")
     data = data.dropna(how="any")
 
     # Reordenar columnas según el orden de entrada y filtrar solo las que llegaron
